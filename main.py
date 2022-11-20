@@ -16,7 +16,7 @@ else:
     window_size = screen.get_size()
 
 b = Board((2, 1))
-b.populateBoard(300)
+b.populateBoard(30)
 
 c = Character((50, 50, 50), b.getGridSize(), b.getPos())
 
@@ -39,10 +39,16 @@ while running:
                 c.move(1)
             elif event.key == pygame.K_SPACE:
                 b.shoot(c.getJPos())
+            elif event.key == pygame.K_DOWN:
+                b.reset()
 
     b.draw(screen, 55)
     c.draw(screen, 55)
     b.highlightBlock(screen, 55 , c.getJPos())
+
+    if b.isBoardEmpty():
+        print("WIN")
+        exit()
 
 
 

@@ -11,12 +11,13 @@ COLORS = {
 
 class Board:
     def __init__(self, pos, w=5, h=15, nbColors=4):
-        self.__pos    = pos
-        self.__w      = w
-        self.__h      = h
-        self.__grid   = np.zeros((h, w))
-        self.__buffer = np.zeros(3)
-        self.__colors = list(COLORS.keys())[:nbColors]
+        self.__pos         = pos
+        self.__w           = w
+        self.__h           = h
+        self.__grid        = np.zeros((h, w))
+        self.__buffer      = np.zeros(3)
+        self.__colors      = list(COLORS.keys())[:nbColors]
+        self.__grid_backup = None
 
     def __getPossiblePositions(self):
         positions = []
@@ -32,7 +33,6 @@ class Board:
     def __getHighlightedBlock(self, charJPos):
         for i in range(self.__h):
             color = self.__grid[i][charJPos]
-            print(color)
             if color == 0:
                 if i == 0: # no blocks on this column
                     return None
@@ -56,21 +56,41 @@ class Board:
                 pos = possiblePositions[index]
                 self.__grid[pos[0]][pos[1]] = color
 
+        self.__grid_backup = self.__grid.copy()
+
+    def reset(self):
+        self.__grid = self.__grid_backup.copy()
+        self.__buffer = np.zeros(3)
+
     def getGridSize(self):
         return (self.__w, self.__h)
 
     def getPos(self):
         return self.__pos
 
+    def __checkBuffer(self):
+        if np.count_nonzero(self.__buffer) == len(self.__buffer):
+            if np.all(self.__buffer == self.__buffer[0]): # are all the colors in the buffer the same
+                self.__buffer = np.zeros(3)
+            else:
+                self.reset()
+
+    def isBoardEmpty(self):
+        return np.count_nonzero(self.__grid) == 0
+
     def shoot(self, charJPos):
         blockPos = self.__getHighlightedBlock(charJPos)
-        color = self.__grid[blockPos[0]][blockPos[1]]
-        self.__buffer[np.count_nonzero(self.__buffer)] = color
-        self.__grid[blockPos[0]][blockPos[1]] = 0
+        if blockPos is not None:
+            color = self.__grid[blockPos[0]][blockPos[1]]
+            self.__buffer[np.count_nonzero(self.__buffer)] = color
+            self.__grid[blockPos[0]][blockPos[1]] = 0
+
+            self.__checkBuffer()
 
     def highlightBlock(self, surface, scale, charJPos):
         blockPos = self.__getHighlightedBlock(charJPos)
-        pygame.draw.rect(surface, (255, 100, 255), ((self.__pos[1] + blockPos[1])*scale, (self.__pos[0] + blockPos[0])*scale, scale, scale), 5)
+        if blockPos is not None:
+            pygame.draw.rect(surface, (255, 100, 255), ((self.__pos[1] + blockPos[1])*scale, (self.__pos[0] + blockPos[0])*scale, scale, scale), 5)
 
     def draw(self, surface, scale):
         # draw grid
