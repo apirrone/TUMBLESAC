@@ -1,9 +1,12 @@
 import pygame
-from board import Board
-from character import Character
+from scenes.gameScene import GameScene
+from scenes.titleMenuScene import TitleMenuScene
+from scenes.onlineMenuScene import OnlineMenuScene
+from scenes.lobbyScene import LobbyScene
 
 window_size=(1600, 1000)
 FULLSCREEN = False
+
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -15,42 +18,36 @@ else:
     screen = pygame.display.set_mode(window_size, pygame.FULLSCREEN)
     window_size = screen.get_size()
 
-b = Board((2, 1))
-b.populateBoard(30)
-
-c = Character((50, 50, 50), b.getGridSize(), b.getPos())
-
 font = pygame.font.SysFont(None, 20)
-background_color = (255, 255, 255)
+
+titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55)
+gameScene = GameScene(window_size[0], window_size[1], 55)
+onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55)
+lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
+
+current_scene = titleMenuScene
+
+dt = clock.tick() # is this really dt ?
 running = True
 while running:
-    screen.fill(background_color)
+    _, action = current_scene.input()
+    
+    if action == "exit_game" : 
+        running = False
+    elif action == "go_to_play_scene":
+        current_scene = gameScene
+    elif action == "go_to_title_scene":
+        current_scene = titleMenuScene
+    elif action == "go_to_online_scene":
+        current_scene = onlineMenuScene
+    elif action == "join_game":
+        # TODO start server
+        current_scene = lobbyScene
+    elif action == "host_game":
+        current_scene = lobbyScene
 
-    events =  pygame.event.get()
-    for event in events:
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:            
-                running = False
-            elif event.key == pygame.K_LEFT:
-                c.move(-1)
-            elif event.key == pygame.K_RIGHT:
-                c.move(1)
-            elif event.key == pygame.K_SPACE:
-                b.shoot(c.getJPos())
-            elif event.key == pygame.K_DOWN:
-                b.reset()
-
-    b.draw(screen, 55)
-    c.draw(screen, 55)
-    b.highlightBlock(screen, 55 , c.getJPos())
-
-    if b.isBoardEmpty():
-        print("WIN")
-        exit()
-
-
+    current_scene.update(dt)
+    current_scene.draw(screen)
 
     pygame.display.flip()
     dt = clock.tick()
