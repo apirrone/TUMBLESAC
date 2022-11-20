@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 import time
+import socket
 
 from multiprocessing.connection import Client
 
@@ -20,6 +21,7 @@ class Network:
         try:
             self.__conn = Client((self.__ip, self.__port))
         except ConnectionRefusedError as e:
+            print(e)
             return False
 
         # first handshake, send my name and get my server_side id back

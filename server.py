@@ -61,5 +61,5 @@ class Server:
             _thread.start_new_thread(self.__threaded_server, (conn, len(list(self.__players.keys()))))
             time.sleep(0.1)
 
-s = Server("localhost", 5001)
+s = Server("0.0.0.0", 5001)
 s.start()
