@@ -4,12 +4,35 @@ from board import Board
 from character import Character
 
 class GameScene(Scene):
-    def __init__(self, w, h, scale):
+    def __init__(self, w, h, scale, network=None):
         super().__init__(w, h, scale)
 
+        self.__network = network
+
         self.__board     = Board((2, 1))
-        self.__board.populateBoard(30)
+
         self.__character = Character((50, 50, 50), self.__board.getGridSize(), self.__board.getPos())
+
+        if self.__network is None:
+            self.__board.populate(30)
+        else:
+            self.__board.populateFromState(self.__network.getInitialBoardState())
+
+            self.__playersBoards     = {}
+            self.__playersNames      = {}
+            self.__playersCharacters = {}
+            i = 1
+            for id, player in self.__network.getPlayers().items():
+                if id != self.__network.getMyID():
+                    w, h = self.__board.getSize()
+                    self.__playersBoards[id] = Board((2, 1 + w*i + i))
+                    self.__playersBoards[id].populateFromState(self.__network.getInitialBoardState())
+                    self.__playersNames[id] = None
+                    self.__playersCharacters[id] = Character((0, 0, 255), self.__playersBoards[id].getGridSize(), self.__playersBoards[id].getPos())
+                    i += 1
+
+
+
 
     def input(self):
         events, action = super().input()
@@ -33,6 +56,30 @@ class GameScene(Scene):
     def update(self, dt):
         super().update(dt)
 
+        if self.__network is not None:
+            self.__network.sendUpdate(self.__board.getState(), self.__character.getJPos())
+            self.__network.getUpdate()
+
+            for id, player in self.__network.getPlayers().items():
+                if id != self.__network.getMyID():
+                    name = player["name"]
+                    if self.__playersNames[id] is None:
+                        self.__playersNames[id] = name
+                    boardState = player["boardState"]
+                    if boardState is not None:
+                        self.__playersBoards[id].populateFromState(boardState)
+
+                    charJPos = player["charJPos"]
+                    if charJPos is not None:
+                        self.__playersCharacters[id].setJPos(charJPos)
+                        
+        if self.__board.isBoardEmpty():
+            if self.__network is not None:
+                self.__network.sendWin()
+            else:
+                print("WIN")
+                exit()
+
     def draw(self, screen):
         super().draw(screen)
 
@@ -41,12 +88,19 @@ class GameScene(Scene):
         self.__character.draw(self._surface, self._scale)
 
 
-        if self.__board.isBoardEmpty():
-            print("WIN")
-            exit()
+        if self.__network is not None:
+            label = pygame.font.SysFont(None, self._scale).render(self.__network.getMyName(), 1, (0, 0, 0))
+            self._surface.blit(label, (self.__board.getPos()[1]*self._scale, 0))
+            for id, board in self.__playersBoards.items():
+                name = self.__playersNames[id]
+                label = pygame.font.SysFont(None, self._scale).render(name, 1, (0, 0, 0))
+                self._surface.blit(label, (board.getPos()[1]*self._scale, 0))
+                if id != self.__network.getMyID():
+                    board.draw(self._surface, self._scale)
+                    self.__playersCharacters[id].draw(self._surface, self._scale)
+
 
         screen.blit(self._surface, (0, 0))
-        # self._surface.blit(screen)
 
 
 

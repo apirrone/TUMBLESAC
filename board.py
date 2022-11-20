@@ -39,7 +39,20 @@ class Board:
                 else:
                     return (i-1, charJPos)
 
-    def populateBoard(self, nb_blocks):
+    def getState(self):
+        state = {}
+        state["w"]      = self.__w
+        state["h"]      = self.__h
+        state["grid"]   = self.__grid
+        state["buffer"] = self.__buffer
+        state["colors"] = self.__colors
+
+        return state
+
+    def getSize(self):
+        return self.__w, self.__h
+
+    def populate(self, nb_blocks):
 
         # nb_blocks must be a multiple of 3
         while not (nb_blocks%3 == 0):
@@ -56,6 +69,14 @@ class Board:
                 pos = possiblePositions[index]
                 self.__grid[pos[0]][pos[1]] = color
 
+        self.__grid_backup = self.__grid.copy()
+
+    def populateFromState(self, state):
+        self.__w      = state["w"]
+        self.__h      = state["h"]
+        self.__grid   = state["grid"]
+        self.__buffer = state["buffer"]
+        self.__colors = state["colors"]
         self.__grid_backup = self.__grid.copy()
 
     def reset(self):

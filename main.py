@@ -3,8 +3,10 @@ from scenes.gameScene import GameScene
 from scenes.titleMenuScene import TitleMenuScene
 from scenes.onlineMenuScene import OnlineMenuScene
 from scenes.lobbyScene import LobbyScene
+import os
 
-window_size=(1600, 1000)
+
+window_size=(1000, 1000)
 FULLSCREEN = False
 
 pygame.init()
@@ -21,12 +23,12 @@ else:
 font = pygame.font.SysFont(None, 20)
 
 titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55)
-gameScene = GameScene(window_size[0], window_size[1], 55)
+gameScene = None#GameScene(window_size[0], window_size[1], 55)
 onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55)
-lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
+lobbyScene = None
 
-# current_scene = titleMenuScene
-current_scene = lobbyScene
+current_scene = titleMenuScene
+# current_scene = lobbyScene
 
 dt = clock.tick() # is this really dt ?
 running = True
@@ -42,10 +44,16 @@ while running:
     elif action == "go_to_online_scene":
         current_scene = onlineMenuScene
     elif action == "join_game":
-        # TODO start server
+        lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
         current_scene = lobbyScene
     elif action == "host_game":
-        current_scene = lobbyScene
+        print("NOT WORKING")
+        print("RUN SERVER    SEPARATELY")
+        # lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
+        # current_scene = lobbyScene
+    elif action == "start_game":        
+        gameScene = GameScene(window_size[0], window_size[1], 55, lobbyScene.getNetwork())
+        current_scene = gameScene
 
     current_scene.update(dt)
     current_scene.draw(screen)
