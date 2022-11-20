@@ -1,6 +1,6 @@
 import pygame
 from scenes.menuScene import MenuScene, Item
-
+import json
 class PlayersTable():
     def __init__(self, pos, scale):
         self.__pos     = pos
@@ -26,10 +26,11 @@ class LobbyScene(MenuScene):
         self._items.append(Item("Start", (1, 12), 5, 2, self._scale, "start_game"))
         self._items[0].setHighlighted(True)
 
+        self.__cfg = json.load(open("online.cfg"))
+        self.__myName = self.__cfg["name"]
+
         self.__playersTable = PlayersTable((1, 1), self._scale)
-        self.__playersTable.addPlayer("Antoijne")
-        self.__playersTable.addPlayer("Antoijne")
-        self.__playersTable.addPlayer("Antoijne")
+        self.__playersTable.addPlayer(self.__myName)
 
     def input(self):
         events, action = super().input()

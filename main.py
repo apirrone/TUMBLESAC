@@ -25,13 +25,14 @@ gameScene = GameScene(window_size[0], window_size[1], 55)
 onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55)
 lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
 
-current_scene = titleMenuScene
+# current_scene = titleMenuScene
+current_scene = lobbyScene
 
 dt = clock.tick() # is this really dt ?
 running = True
 while running:
     _, action = current_scene.input()
-    
+
     if action == "exit_game" : 
         running = False
     elif action == "go_to_play_scene":
