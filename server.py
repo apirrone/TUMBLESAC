@@ -14,8 +14,8 @@ class Server:
         self.__connexions   = {}
 
         self.__socket       = Listener((self.__ip, self.__port))
-        self.__board        = Board((0, 0))
-        self.__board.populate(30) # TODO choose this number well
+        self.__board        = Board((0, 0), nbColors=6)
+        self.__board.populate(100) # TODO choose this number well
 
         self.__game_started = False
 
