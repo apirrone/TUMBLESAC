@@ -43,11 +43,12 @@ class Board:
 
     def getState(self):
         state = {}
-        state["w"]      = self.__w
-        state["h"]      = self.__h
-        state["grid"]   = self.__grid
-        state["buffer"] = self.__buffer
-        state["colors"] = self.__colors
+        state["w"]           = self.__w
+        state["h"]           = self.__h
+        state["grid"]        = self.__grid
+        state["buffer_size"] = self.__buffer_size
+        state["buffer"]      = self.__buffer
+        state["colors"]      = self.__colors
 
         return state
 
@@ -74,11 +75,12 @@ class Board:
         self.__grid_backup = self.__grid.copy()
 
     def populateFromState(self, state):
-        self.__w      = state["w"]
-        self.__h      = state["h"]
-        self.__grid   = state["grid"]
-        self.__buffer = state["buffer"]
-        self.__colors = state["colors"]
+        self.__w           = state["w"]
+        self.__h           = state["h"]
+        self.__grid        = state["grid"]
+        self.__buffer_size = state["buffer_size"]
+        self.__buffer      = state["buffer"]
+        self.__colors      = state["colors"]
         self.__grid_backup = self.__grid.copy()
 
     def reset(self):
