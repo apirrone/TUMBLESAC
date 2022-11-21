@@ -82,9 +82,9 @@ class GameScene(Scene):
                 print("WIN")
                 exit()
 
-        if self.__network.isGameOver():
-            self.__network.disconnect()
-            return "game_over"
+        # if self.__network.isGameOver():
+        #     self.__network.disconnect()
+        #     return "game_over"
 
     def draw(self, screen):
         super().draw(screen)

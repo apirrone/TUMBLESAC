@@ -15,9 +15,11 @@ class Server:
 
         self.__socket       = Listener((self.__ip, self.__port))
         self.__board        = Board((0, 0))
-        self.__board.populate(10) # TODO choose this number well
+        self.__board.populate(30) # TODO choose this number well
 
         self.__game_started = False
+
+        self.__game_over    = False
 
     def __threaded_server(self, conn, id):
         self.__connexions[id] = conn
@@ -37,6 +39,7 @@ class Server:
                     self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None}
                     conn.send({"id" : id})
                     first_handshake = False
+                    self.__game_over = False
             elif msg["type"] == "start_game":
                 self.__game_started = True
             elif msg["type"] == "is_game_started":
@@ -47,6 +50,7 @@ class Server:
                     conn.send({"is_game_started": True, "initial_board_state" : initial_board_state})
             elif msg["type"] == "win":
                 msg = {"type" : "game_over", "data" : None}
+                self.__game_over = True
                 conn.send(msg)                
             elif msg["type"] == "send_update":
                 self.__players[id]["boardState"] = msg["boardState"]
