@@ -16,6 +16,7 @@ class Network:
 
         self.__players             = {}
         self.__initial_board_state = None
+        self.__game_over           = False
     
     def start(self):
         try:
@@ -44,6 +45,8 @@ class Network:
         self.__initial_board_state = msg["initial_board_state"]
         return msg["is_game_started"]
     
+    def isGameOver(self):
+        return self.__game_over
 
     def sendWin(self):
         msg = {"type" : "win"}
@@ -51,6 +54,10 @@ class Network:
 
     def sendUpdate(self, boardState, charJPos):
         msg = {"type" : "send_update", "boardState" : boardState, "charJPos" : charJPos}
+        self.__conn.send(msg)
+
+    def disconnect(self):
+        msg = {"type" : "disconnect"}
         self.__conn.send(msg)
 
     def getUpdate(self):
@@ -62,7 +69,7 @@ class Network:
 
         if msg["type"] == "game_over":
             winner = msg["data"]
-            # TODO
+            self.__game_over = True
 
     def getPlayers(self):
         return self.__players

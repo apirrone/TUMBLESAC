@@ -56,8 +56,16 @@ while running:
         gameScene = GameScene(window_size[0], window_size[1], 55, lobbyScene.getNetwork())
         current_scene = gameScene
 
-    current_scene.update(dt)
+    ret = current_scene.update(dt)
+
+    if ret is not None:
+        if ret == "game_over":
+            gameScene = None
+            lobbyScene = None
+            current_scene = titleMenuScene
     current_scene.draw(screen)
 
     pygame.display.flip()
     dt = clock.tick()
+
+lobbyScene.getNetwork().disconnect()

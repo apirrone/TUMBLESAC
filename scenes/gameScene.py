@@ -76,9 +76,15 @@ class GameScene(Scene):
         if self.__board.isBoardEmpty():
             if self.__network is not None:
                 self.__network.sendWin()
+                self.__network.disconnect()
+                return "game_over"
             else:
                 print("WIN")
                 exit()
+
+        if self.__network.isGameOver():
+            self.__network.disconnect()
+            return "game_over"
 
     def draw(self, screen):
         super().draw(screen)

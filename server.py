@@ -15,7 +15,7 @@ class Server:
 
         self.__socket       = Listener((self.__ip, self.__port))
         self.__board        = Board((0, 0))
-        self.__board.populate(30) # TODO choose this number well
+        self.__board.populate(10) # TODO choose this number well
 
         self.__game_started = False
 
@@ -23,6 +23,7 @@ class Server:
         self.__connexions[id] = conn
         first_handshake = True
         running = True
+        name = None
         while running:
             conn = self.__connexions[id]
             try:
@@ -32,6 +33,7 @@ class Server:
             if first_handshake:
                 if msg["type"] == "new_player":
                     name = msg["name"] 
+                    print("New player ", name)
                     self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None}
                     conn.send({"id" : id})
                     first_handshake = False
@@ -52,6 +54,10 @@ class Server:
             elif msg["type"] == "request_update":
                 msg = {"type" : "game_update", "data" : self.__players}
                 conn.send(msg)
+            elif msg["type"] == "disconnect":
+                print("player ", name, "disconnected")
+                running = False
+                del self.__players[id]
 
 
     def start(self):
