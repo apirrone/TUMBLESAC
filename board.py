@@ -11,12 +11,12 @@ COLORS = {
 }
 
 class Board:
-    def __init__(self, pos, w=5, h=15, nbColors=4):
+    def __init__(self, pos, w=5, h=15, nbColors=4, buffer_size=3):
         self.__pos         = pos
         self.__w           = w
         self.__h           = h
         self.__grid        = np.zeros((h, w))
-        self.__buffer_size = 4
+        self.__buffer_size = buffer_size
         self.__buffer      = np.zeros(self.__buffer_size)
         self.__colors      = list(COLORS.keys())[:nbColors]
         self.__grid_backup = None
