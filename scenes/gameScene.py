@@ -11,7 +11,6 @@ class GameScene(Scene):
 
         self.__board     = Board((2, 1))
 
-        self.__character = Character((50, 50, 50), self.__board.getGridSize(), self.__board.getPos())
 
         if self.__network is None:
             self.__board.populate(30)
@@ -31,6 +30,7 @@ class GameScene(Scene):
                     self.__playersCharacters[id] = Character((0, 0, 255), self.__playersBoards[id].getGridSize(), self.__playersBoards[id].getPos())
                     i += 1
 
+        self.__character = Character((50, 50, 50), self.__board.getGridSize(), self.__board.getPos())
 
 
 
