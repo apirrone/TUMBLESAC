@@ -16,7 +16,8 @@ class Board:
         self.__w           = w
         self.__h           = h
         self.__grid        = np.zeros((h, w))
-        self.__buffer      = np.zeros(3)
+        self.__buffer_size = 4
+        self.__buffer      = np.zeros(self.__buffer_size)
         self.__colors      = list(COLORS.keys())[:nbColors]
         self.__grid_backup = None
 
@@ -56,15 +57,15 @@ class Board:
     def populate(self, nb_blocks):
 
         # nb_blocks must be a multiple of 3
-        while not (nb_blocks%3 == 0):
+        while not (nb_blocks%self.__buffer_size == 0):
             nb_blocks += 1
 
         nb_blocks = min(nb_blocks, (self.__w*self.__h)-self.__h*2)
         
-        for i in range(0, nb_blocks, 3):
+        for i in range(0, nb_blocks, self.__buffer_size):
             color = np.random.choice(self.__colors)
             possiblePositions = self.__getPossiblePositions()
-            indicesPositions  = np.random.choice(len(possiblePositions), 3, replace=False)
+            indicesPositions  = np.random.choice(len(possiblePositions), self.__buffer_size, replace=False)
 
             for index in indicesPositions:
                 pos = possiblePositions[index]
@@ -82,7 +83,7 @@ class Board:
 
     def reset(self):
         self.__grid = self.__grid_backup.copy()
-        self.__buffer = np.zeros(3)
+        self.__buffer = np.zeros(self.__buffer_size)
 
     def getGridSize(self):
         return (self.__w, self.__h)
@@ -93,7 +94,7 @@ class Board:
     def __checkBuffer(self):
         if np.count_nonzero(self.__buffer) == len(self.__buffer):
             if np.all(self.__buffer == self.__buffer[0]): # are all the colors in the buffer the same
-                self.__buffer = np.zeros(3)
+                self.__buffer = np.zeros(self.__buffer_size)
             else:
                 self.reset()
 
