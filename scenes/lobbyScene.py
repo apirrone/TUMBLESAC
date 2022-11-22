@@ -1,5 +1,5 @@
 import pygame
-from scenes.menuScene import MenuScene, Item
+from scenes.menuScene import MenuScene, Button, ToggleButton
 import json
 import sys
 sys.path.append("../")
@@ -29,8 +29,10 @@ class LobbyScene(MenuScene):
     def __init__(self, w, h, scale):
         super().__init__(w, h, scale)
 
-        self._items.append(Item("Start", (1, 12), 5, 2, self._scale, "start_game"))
-        self._items[0].setHighlighted(True)
+
+        self._buttons.append(ToggleButton("Ready", (1, 12), 5, 2, self._scale, "ready", "not_ready"))
+        self._buttons.append(Button("Start", (1, 15), 5, 2, self._scale, "start_game"))
+        self._buttons[0].setHighlighted(True)
 
         self.__cfg = json.load(open("online.cfg"))
         self.__myName = self.__cfg["name"]
@@ -48,10 +50,14 @@ class LobbyScene(MenuScene):
         if action == "esc":
             action = "go_to_online_scene"
 
-        if action == "start_game":
-            print("STARTING")
-            self.__network.sendStartGame()
+        if action == "ready":
+            self.__network.sendReady(True)
+        if action == "not_ready":
+            self.__network.sendReady(False)
 
+        if action == "start_game":
+            self.__network.sendStartGame()
+            action = ""
         if self.__game_started:
             action = "start_game"
 
@@ -62,6 +68,7 @@ class LobbyScene(MenuScene):
 
     def update(self, dt):
         super().update(dt)
+        
         if not self.__connexion_status:
             self.__connexion_status = self.__network.start()
             return

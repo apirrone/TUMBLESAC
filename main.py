@@ -50,8 +50,6 @@ while running:
     elif action == "host_game":
         print("NOT WORKING")
         print("RUN SERVER    SEPARATELY")
-        # lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
-        # current_scene = lobbyScene
     elif action == "start_game":        
         gameScene = GameScene(window_size[0], window_size[1], 55, lobbyScene.getNetwork())
         current_scene = gameScene

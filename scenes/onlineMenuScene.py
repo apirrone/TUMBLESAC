@@ -1,13 +1,13 @@
 import pygame
-from scenes.menuScene import MenuScene, Item
+from scenes.menuScene import MenuScene, Button
 
 class OnlineMenuScene(MenuScene):
     def __init__(self, w, h, scale):
         super().__init__(w, h, scale)
 
-        self._items.append(Item("Join", (1, 1), 5, 2, self._scale, "join_game"))
-        self._items.append(Item("Host", (1, 6), 5, 2, self._scale, "host_game"))
-        self._items[0].setHighlighted(True)
+        self._buttons.append(Button("Join", (1, 1), 5, 2, self._scale, "join_game"))
+        self._buttons.append(Button("Host", (1, 6), 5, 2, self._scale, "host_game"))
+        self._buttons[0].setHighlighted(True)
 
     def input(self):
         events, action = super().input()

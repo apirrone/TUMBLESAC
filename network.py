@@ -17,6 +17,8 @@ class Network:
         self.__players             = {}
         self.__initial_board_state = None
         self.__game_over           = False
+
+        self.__game_started        = False
     
     def start(self):
         try:
@@ -37,13 +39,12 @@ class Network:
         msg = {"type" : "start_game"}
         self.__conn.send(msg)
 
-    def isGameStarted(self):
-        msg = {"type" : "is_game_started"}
+    def sendReady(self, ready):
+        msg = {"type" : "ready", "data" : ready}
         self.__conn.send(msg)
-        msg = self.__conn.recv()
-        is_game_started = msg["is_game_started"]
-        self.__initial_board_state = msg["initial_board_state"]
-        return msg["is_game_started"]
+
+    def isGameStarted(self):
+        return self.__game_started
     
     def isGameOver(self):
         return self.__game_over
@@ -64,8 +65,14 @@ class Network:
         msg = {"type" : "request_update"}
         self.__conn.send(msg)
         msg = self.__conn.recv()
+        print(msg)
         if msg["type"] == "game_update":
             self.__players = msg["data"]
+            if not msg["game_started"] and self.__initial_board_state is None:
+                self.__initial_board_state = msg["initial_board_state"]
+                self.__game_started = False
+            else:
+                self.__game_started = True
 
         if msg["type"] == "game_over":
             winner = msg["data"]

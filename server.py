@@ -14,54 +14,90 @@ class Server:
         self.__connexions   = {}
 
         self.__socket       = Listener((self.__ip, self.__port))
-        self.__board        = Board((0, 0), nbColors=4, buffer_size=3, w=5)
+        self.__board        = Board((0, 0), nbColors=6, buffer_size=3, w=5)
         self.__board.populate(150) # TODO choose this number well
 
         self.__game_started = False
+        self.__game_ready   = False
 
         self.__game_over    = False
 
+        self.__sessions     = {}
+
+    def __new_player(self, conn, id, name):
+        print("New player ", name)
+        self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None, "ready" : False}
+        conn.send({"id" : id})
+
+    def __disconnect(self, id):
+        print("player ", self.__players[id]["name"], "disconnected")
+        del self.__players[id]
+
+
+    # TODO handle disconnections properly
     def __threaded_server(self, conn, id):
         self.__connexions[id] = conn
         first_handshake = True
         running = True
-        name = None
         while running:
+
             conn = self.__connexions[id]
+
             try:
                 msg = conn.recv()
             except Exception as e:
                 pass
+
             if first_handshake:
                 if msg["type"] == "new_player":
-                    name = msg["name"] 
-                    print("New player ", name)
-                    self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None}
-                    conn.send({"id" : id})
+                    self.__new_player(conn, id, msg["name"])
                     first_handshake = False
-                    self.__game_over = False
-            elif msg["type"] == "start_game":
-                self.__game_started = True
-            elif msg["type"] == "is_game_started":
-                initial_board_state = self.__board.getState()
-                if not self.__game_started:
-                    conn.send({"is_game_started": False, "initial_board_state" : initial_board_state})
+
+            elif msg["type"] == "disconnect":
+                self.__disconnect(id)
+                running = False
+
+            elif msg["type"] == "ready":
+                ready = msg["data"]
+                self.__players[id]["ready"] = ready
+                if ready:
+                    print("player ", self.__players[id]["name"], "is ready")
                 else:
-                    conn.send({"is_game_started": True, "initial_board_state" : initial_board_state})
+                    print("player ", self.__players[id]["name"], "is not ready")
+
+            elif msg["type"] == "start_game":
+                if self.__game_ready:
+                    self.__game_started = True
+
             elif msg["type"] == "win":
                 msg = {"type" : "game_over", "data" : None}
                 self.__game_over = True
                 conn.send(msg)                
+
             elif msg["type"] == "send_update":
                 self.__players[id]["boardState"] = msg["boardState"]
                 self.__players[id]["charJPos"] = msg["charJPos"]
+
             elif msg["type"] == "request_update":
-                msg = {"type" : "game_update", "data" : self.__players}
+                start = True
+                for id, player in self.__players.items():
+                    if not player["ready"]:
+                        start = False
+                        break
+
+                if len(self.__players) == 0:
+                    start = False
+                
+                self.__game_ready = start
+                # TODO ready ? started ? not working when one person in game
+                if not self.__game_started:
+                    initial_board_state = self.__board.getState()
+                    msg = {"type" : "game_update", "data" : self.__players, "game_started" : self.__game_started, "initial_board_state" : initial_board_state}
+                else:
+                    msg = {"type" : "game_update", "data" : self.__players, "game_started" : self.__game_started}
                 conn.send(msg)
-            elif msg["type"] == "disconnect":
-                print("player ", name, "disconnected")
-                running = False
-                del self.__players[id]
+
+
 
 
     def start(self):
