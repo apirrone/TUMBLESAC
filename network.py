@@ -20,7 +20,6 @@ class Network:
         self.__winner              = None
 
         self.__game_started        = False
-        self.__i                   = 0
     
     def start(self):
         try:
@@ -36,6 +35,12 @@ class Network:
         self.__id = msg["id"]
 
         return True
+
+    def reset(self):
+        self.__winner = None
+        self.__game_started = False
+        self.__game_over = False
+        self.__initial_board_state = None
 
     def sendStartGame(self):
         msg = {"type" : "start_game"}
@@ -60,13 +65,13 @@ class Network:
         self.__conn.send(msg)
 
     def disconnect(self):
-        msg = {"type" : "disconnect"}
-        self.__conn.send(msg)
+        if self.__conn is not None:
+            msg = {"type" : "disconnect"}
+            self.__conn.send(msg)
 
 
     def getUpdate(self):
-        msg = {"type" : "request_update", "tmp":self.__i }
-        self.__i += 1
+        msg = {"type" : "request_update"}
         self.__conn.send(msg)
         msg = self.__conn.recv()
         if msg["type"] == "game_update":

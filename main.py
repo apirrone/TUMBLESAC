@@ -49,6 +49,7 @@ while running:
         current_scene = titleMenuScene
     elif action == "go_to_online_scene":
         current_scene = onlineMenuScene
+        network.disconnect()
     elif action == "join_game":
         lobbyScene = LobbyScene(window_size[0], window_size[1], 55, network)
         current_scene = lobbyScene
@@ -56,7 +57,7 @@ while running:
         print("NOT WORKING")
         print("RUN SERVER    SEPARATELY")
     elif action == "start_game":        
-        lobbyScene = None
+        print("start game")
         gameScene = GameScene(window_size[0], window_size[1], 55, network)
         current_scene = gameScene
 
@@ -66,10 +67,11 @@ while running:
 
         if game_over:
             print("WINNER : ", winner)
-            network.disconnect()
+            network.reset()
             gameScene = None
-            lobbyScene = None
-            current_scene = titleMenuScene
+            lobbyScene.reset()
+            current_scene = lobbyScene
+
     current_scene.draw(screen)
 
     pygame.display.flip()

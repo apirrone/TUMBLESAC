@@ -42,7 +42,6 @@ class LobbyScene(MenuScene):
         self.__network = network
 
         self.__connexion_status = self.__network.start()
-        self.__game_started = False
 
     def input(self):
         events, action = super().input()
@@ -58,10 +57,15 @@ class LobbyScene(MenuScene):
         if action == "start_game":
             self.__network.sendStartGame()
             action = ""
-        if self.__game_started:
+
+        if self.__network.isGameStarted():
+            print("aaaaaaaaa")
             action = "start_game"
 
         return events, action
+
+    def reset(self):
+        self._buttons[0].toggle()
 
     def getNetwork(self):
         return self.__network
@@ -80,8 +84,6 @@ class LobbyScene(MenuScene):
         for id, player in self.__network.getPlayers().items():
             name = player["name"]
             self.__playersTable.addPlayer(name)
-
-        self.__game_started = self.__network.isGameStarted()
 
 
     def draw(self, screen):

@@ -57,6 +57,8 @@ class Board:
 
     def populate(self, nb_blocks):
 
+        self.__grid = np.zeros((self.__h, self.__w))
+
         # nb_blocks must be a multiple of 3
         while not (nb_blocks%self.__buffer_size == 0):
             nb_blocks += 1

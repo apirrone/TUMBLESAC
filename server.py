@@ -16,7 +16,8 @@ class Server:
 
         self.__socket       = Listener((self.__ip, self.__port))
         self.__board        = Board((0, 0), nbColors=6, buffer_size=3, w=5)
-        self.__board.populate(3) # TODO choose this number well
+        self.__boardSize    = 3
+        self.__board.populate(self.__boardSize) # TODO choose this number well
 
         self.__game_started = False
         self.__game_ready   = False
@@ -24,7 +25,14 @@ class Server:
         self.__game_over    = False
         self.__winner       = None
 
-        self.__sessions     = {}
+    def __startGame(self):
+        print("starting game")
+        self.__game_ready = False
+        self.__game_started = True
+        self.__winner = None
+        self.__game_over = False
+        self.__board.populate(self.__boardSize)
+
 
     def __new_player(self, conn, id, name):
         print("New player ", name)
@@ -65,9 +73,10 @@ class Server:
 
             elif msg["type"] == "start_game":
                 if self.__game_ready:
-                    self.__game_started = True
+                    self.__startGame()
 
             elif msg["type"] == "win":
+                self.__game_started = False
                 self.__game_over = True
                 self.__winner = self.__players[id]["name"]
 
@@ -86,6 +95,7 @@ class Server:
                     start = False
                 
                 self.__game_ready = start
+
                 if not self.__game_started:
                     initial_board_state = self.__board.getState()
                     msg = {
@@ -104,6 +114,8 @@ class Server:
                          "game_over"    : self.__game_over,
                          "winner"       : self.__winner
                         }
+                    for _, player in self.__players.items():
+                        player["ready"] = False
                 conn.send(msg)
 
 
