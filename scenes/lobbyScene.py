@@ -3,7 +3,7 @@ from scenes.menuScene import MenuScene, Button, ToggleButton
 import json
 import sys
 sys.path.append("../")
-from network import Network
+import numpy as np
 class PlayersTable():
     def __init__(self, pos, scale):
         self.__pos     = pos
@@ -45,6 +45,17 @@ class LobbyScene(MenuScene):
 
         self.__last_winner = ""
 
+        self.__taunts = [
+            "Quel énorme sac à merde !",
+            "Le plus gros des sacs !",
+            "Jamais vu un tas de merde aussi haut",
+            "rEgaRDez mOI j'Ai GAgNé GneuGneu",
+            "Sac un jour, sac toujours",
+            "Au SACours ...",
+            "Il a triché ce gros sac"
+        ]
+        self.__current_taunt = np.random.choice(self.__taunts)
+
     def input(self):
         events, action = super().input()
 
@@ -69,6 +80,7 @@ class LobbyScene(MenuScene):
     def reset(self, winner=""):
         self._buttons[0].toggle()
         self.__last_winner = winner
+        self.__current_taunt = np.random.choice(self.__taunts)
 
     def getNetwork(self):
         return self.__network
@@ -102,7 +114,11 @@ class LobbyScene(MenuScene):
 
         self._surface.blit(label, (0, 0))
 
-        label = pygame.font.SysFont(None, self._scale).render("Last winner : "+str(self.__last_winner), 1, (0, 0, 0))
-        self._surface.blit(label, (6.5*self._scale, 16*self._scale))
+        if self.__last_winner != "":
+            label = pygame.font.SysFont(None, self._scale).render("Last winner : "+str(self.__last_winner), 1, (0, 0, 0))
+            self._surface.blit(label, (6.5*self._scale, 16*self._scale))
+
+            label = pygame.font.SysFont(None, self._scale//2).render(self.__current_taunt, 1, (0, 0, 0))
+            self._surface.blit(label, (6.5*self._scale, 17*self._scale))
 
         screen.blit(self._surface, (0, 0))
