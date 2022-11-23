@@ -26,7 +26,7 @@ class PlayersTable():
 
 
 class LobbyScene(MenuScene):
-    def __init__(self, w, h, scale):
+    def __init__(self, w, h, scale, network):
         super().__init__(w, h, scale)
 
 
@@ -39,7 +39,7 @@ class LobbyScene(MenuScene):
 
         self.__playersTable = PlayersTable((1, 1), self._scale)
 
-        self.__network = Network(self.__cfg["ip"], self.__cfg["port"], self.__myName)
+        self.__network = network
 
         self.__connexion_status = self.__network.start()
         self.__game_started = False

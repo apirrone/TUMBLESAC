@@ -4,6 +4,8 @@ from scenes.titleMenuScene import TitleMenuScene
 from scenes.onlineMenuScene import OnlineMenuScene
 from scenes.lobbyScene import LobbyScene
 import os
+from network import Network
+import json
 
 
 window_size=(1000, 1000)
@@ -30,6 +32,9 @@ lobbyScene = None
 current_scene = titleMenuScene
 # current_scene = lobbyScene
 
+cfg = json.load(open("online.cfg"))
+network = Network(cfg["ip"], cfg["port"], cfg["name"])
+
 dt = clock.tick() # is this really dt ?
 running = True
 while running:
@@ -45,22 +50,23 @@ while running:
     elif action == "go_to_online_scene":
         current_scene = onlineMenuScene
     elif action == "join_game":
-        lobbyScene = LobbyScene(window_size[0], window_size[1], 55)
+        lobbyScene = LobbyScene(window_size[0], window_size[1], 55, network)
         current_scene = lobbyScene
     elif action == "host_game":
         print("NOT WORKING")
         print("RUN SERVER    SEPARATELY")
     elif action == "start_game":        
-        gameScene = GameScene(window_size[0], window_size[1], 55, lobbyScene.getNetwork())
+        lobbyScene = None
+        gameScene = GameScene(window_size[0], window_size[1], 55, network)
         current_scene = gameScene
 
     current_scene.update(dt)
     if gameScene is not None:
-        game_over, winner = gameScene.getNetwork().isGameOver()
+        game_over, winner = network.isGameOver()
 
         if game_over:
             print("WINNER : ", winner)
-            gameScene.getNetwork().disconnect()
+            network.disconnect()
             gameScene = None
             lobbyScene = None
             current_scene = titleMenuScene
@@ -69,4 +75,4 @@ while running:
     pygame.display.flip()
     dt = clock.tick()
 
-lobbyScene.getNetwork().disconnect()
+network.disconnect()

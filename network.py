@@ -56,7 +56,7 @@ class Network:
         self.__conn.send(msg)
 
     def sendUpdate(self, boardState, charJPos):
-        msg = {"type" : "send_update", "boardState" : boardState, "charJPos" : charJPos}
+        msg = {"type" : "client_update", "boardState" : boardState, "charJPos" : charJPos}
         self.__conn.send(msg)
 
     def disconnect(self):

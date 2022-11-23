@@ -37,18 +37,14 @@ class Server:
 
 
     # TODO handle disconnections properly
-    def __threaded_server(self, conn, id):
-        self.__connexions[id] = conn
+    def __threaded_server(self, c, id):
+        self.__connexions[id] = c
         first_handshake = True
         running = True
         while running:
+            conn = self.__connexions[id]
 
-            # conn = self.__connexions[id] -> this causes ran out of input
-            try:
-                msg = conn.recv()
-            except Exception as e:
-                print(e)
-                pass
+            msg = conn.recv()
 
             if first_handshake:
                 if msg["type"] == "new_player":
@@ -72,19 +68,16 @@ class Server:
                     self.__game_started = True
 
             elif msg["type"] == "win":
-                # msg = {"type" : "game_over", "data" : self.__players[id]["name"]}
                 self.__game_over = True
                 self.__winner = self.__players[id]["name"]
-                # conn.send(msg)                
 
-            elif msg["type"] == "send_update":
+            elif msg["type"] == "client_update":
                 self.__players[id]["boardState"] = msg["boardState"]
                 self.__players[id]["charJPos"] = msg["charJPos"]
 
             elif msg["type"] == "request_update":
-                i = msg["tmp"]
                 start = True
-                for id, player in self.__players.items():
+                for _, player in self.__players.items():
                     if not player["ready"]:
                         start = False
                         break
@@ -111,7 +104,6 @@ class Server:
                          "game_over"    : self.__game_over,
                          "winner"       : self.__winner
                         }
-
                 conn.send(msg)
 
 
@@ -120,8 +112,8 @@ class Server:
     def start(self):
         print("Waiting for connections ...")
         while True:
-            conn = self.__socket.accept()
-            _thread.start_new_thread(self.__threaded_server, (conn, self.__current_id))
+            c = self.__socket.accept()
+            _thread.start_new_thread(self.__threaded_server, (c, self.__current_id))
             self.__current_id += 1
             time.sleep(0.1)
 
