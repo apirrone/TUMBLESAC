@@ -36,7 +36,7 @@ class Server:
 
     def __new_player(self, conn, id, name):
         print("New player ", name)
-        self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None, "ready" : False}
+        self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None, "ready" : False, "score" : 0}
         conn.send({"id" : id})
 
     def __disconnect(self, id):
@@ -79,6 +79,8 @@ class Server:
                 self.__game_started = False
                 self.__game_over = True
                 self.__winner = self.__players[id]["name"]
+                self.__players[id]["score"] += 1
+                print("coucou")
 
             elif msg["type"] == "client_update":
                 self.__players[id]["boardState"] = msg["boardState"]

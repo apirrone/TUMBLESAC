@@ -20,6 +20,8 @@ class Network:
         self.__winner              = None
 
         self.__game_started        = False
+
+        self.__sent_win            = False
     
     def start(self):
         try:
@@ -41,6 +43,7 @@ class Network:
         self.__game_started = False
         self.__game_over = False
         self.__initial_board_state = None
+        self.__sent_win = False
 
     def sendStartGame(self):
         msg = {"type" : "start_game"}
@@ -59,6 +62,10 @@ class Network:
     def sendWin(self):
         msg = {"type" : "win"}
         self.__conn.send(msg)
+        self.__sent_win = True
+
+    def winSent(self):
+        return self.__sent_win
 
     def sendUpdate(self, boardState, charJPos):
         msg = {"type" : "client_update", "boardState" : boardState, "charJPos" : charJPos}

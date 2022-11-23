@@ -84,7 +84,9 @@ class GameScene(Scene):
                         
         if self.__board.isBoardEmpty():
             if self.__network is not None:
-                self.__network.sendWin()
+                if not self.__network.winSent():
+                    self.__network.sendWin()
+                    print("SENDWIN")
             else:
                 self.__next_action = "go_to_title_scene"
 

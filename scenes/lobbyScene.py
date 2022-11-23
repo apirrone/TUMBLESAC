@@ -8,21 +8,25 @@ class PlayersTable():
     def __init__(self, pos, scale):
         self.__pos     = pos
         self.__scale   = scale
-        self.__players = []
+        self.__players = {}
         self.__font    = pygame.font.SysFont(None, self.__scale)
 
     def clear(self):
-        self.__players = []
+        self.__players = {}
 
-    def addPlayer(self, name):
-        self.__players.append(name)
+    def addPlayer(self, id, name, score, ready):
+        self.__players[id] = {"name" : name, "score" : score, "ready" : " - ready" if ready else ""}
 
     def draw(self, surface):
-        for i, player in enumerate(self.__players):
+        for i, id in enumerate(self.__players.keys()):
+            name = self.__players[id]["name"]
+            score = self.__players[id]["score"]
+            ready = self.__players[id]["ready"]
             pygame.draw.rect(surface, (0, 0, 0), (self.__pos[0]*self.__scale, (i+self.__pos[1])*self.__scale, 10*self.__scale, self.__scale), 3)
-            label = self.__font.render(player, 1, (0, 0, 0))
+            txt = name + ' - ' + str(score) + ready
+            label = self.__font.render(txt, 1, (0, 0, 0))
 
-            surface.blit(label, (self.__pos[0]*self.__scale, (i+self.__pos[1])*self.__scale))
+            surface.blit(label, (self.__pos[0]*self.__scale, (i+self.__pos[1])*self.__scale+10))
 
 
 class LobbyScene(MenuScene):
@@ -97,8 +101,11 @@ class LobbyScene(MenuScene):
         # TODO do better, this is so bad
         self.__playersTable.clear()
         for id, player in self.__network.getPlayers().items():
+            # id = player["id"]
             name = player["name"]
-            self.__playersTable.addPlayer(name)
+            score = player["score"]
+            ready = player["ready"]
+            self.__playersTable.addPlayer(id, name, score, ready)
 
 
     def draw(self, screen):
