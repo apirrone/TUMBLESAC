@@ -10,6 +10,7 @@ class Server:
         self.__ip           = ip
         self.__port         = port
 
+        self.__current_id   = 0
         self.__players      = {}
         self.__connexions   = {}
 
@@ -41,11 +42,11 @@ class Server:
         running = True
         while running:
 
-            conn = self.__connexions[id]
-
+            # conn = self.__connexions[id] -> this causes ran out of input
             try:
                 msg = conn.recv()
             except Exception as e:
+                print(e)
                 pass
 
             if first_handshake:
@@ -79,6 +80,7 @@ class Server:
                 self.__players[id]["charJPos"] = msg["charJPos"]
 
             elif msg["type"] == "request_update":
+                i = msg["tmp"]
                 start = True
                 for id, player in self.__players.items():
                     if not player["ready"]:
@@ -89,12 +91,12 @@ class Server:
                     start = False
                 
                 self.__game_ready = start
-                # TODO ready ? started ? not working when one person in game
                 if not self.__game_started:
                     initial_board_state = self.__board.getState()
                     msg = {"type" : "game_update", "data" : self.__players, "game_started" : self.__game_started, "initial_board_state" : initial_board_state}
                 else:
                     msg = {"type" : "game_update", "data" : self.__players, "game_started" : self.__game_started}
+
                 conn.send(msg)
 
 
@@ -104,7 +106,8 @@ class Server:
         print("Waiting for connections ...")
         while True:
             conn = self.__socket.accept()
-            _thread.start_new_thread(self.__threaded_server, (conn, len(list(self.__players.keys()))))
+            _thread.start_new_thread(self.__threaded_server, (conn, self.__current_id))
+            self.__current_id += 1
             time.sleep(0.1)
 
 s = Server("0.0.0.0", 5001)

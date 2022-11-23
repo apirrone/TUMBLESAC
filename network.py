@@ -19,6 +19,7 @@ class Network:
         self.__game_over           = False
 
         self.__game_started        = False
+        self.__i                   = 0
     
     def start(self):
         try:
@@ -62,14 +63,15 @@ class Network:
         self.__conn.send(msg)
 
     def getUpdate(self):
-        msg = {"type" : "request_update"}
+        msg = {"type" : "request_update", "tmp":self.__i }
+        self.__i += 1
         self.__conn.send(msg)
         msg = self.__conn.recv()
-        print(msg)
         if msg["type"] == "game_update":
             self.__players = msg["data"]
-            if not msg["game_started"] and self.__initial_board_state is None:
-                self.__initial_board_state = msg["initial_board_state"]
+            if not msg["game_started"] :
+                if self.__initial_board_state is None:
+                    self.__initial_board_state = msg["initial_board_state"]
                 self.__game_started = False
             else:
                 self.__game_started = True
