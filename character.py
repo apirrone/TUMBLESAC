@@ -18,4 +18,6 @@ class Character:
         self.__j_pos = min(max(0, self.__j_pos + dir), self.__grid_w-1)
 
     def draw(self, surface, scale):
-        pygame.draw.rect(surface, self.__color, ((self.__board_pos[1]+self.__j_pos)*scale, (self.__grid_h-1+self.__board_pos[0])*scale,  scale, scale)) 
+        x = (self.__board_pos[1]+self.__j_pos)*scale
+        y = (self.__grid_h-1+self.__board_pos[0])*scale
+        pygame.draw.rect(surface, self.__color, (x, y,  scale, scale)) 

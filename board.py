@@ -59,7 +59,7 @@ class Board:
 
         self.__grid = np.zeros((self.__h, self.__w))
 
-        # nb_blocks must be a multiple of 3
+        # nb_blocks must be a multiple of buffer_size
         while not (nb_blocks%self.__buffer_size == 0):
             nb_blocks += 1
 
@@ -119,9 +119,17 @@ class Board:
         if blockPos is not None:
             pygame.draw.rect(surface, (255, 100, 255), ((self.__pos[1] + blockPos[1])*scale, (self.__pos[0] + blockPos[0])*scale, scale, scale), 5)
 
-    def draw(self, surface, scale):
+    def draw(self, surface, scale, charJPos):
+        # draw grid background
+        pygame.draw.rect(surface, (100, 100, 100), (self.__pos[1]*scale, self.__pos[0]*scale, self.__w*scale, self.__h*scale))
+
+        # draw ray
+        rayStartX = (self.__pos[1]+charJPos)*scale + scale//2
+        rayStartY = (self.__h-1+self.__pos[0])*scale
+        rayEndY   = (self.__pos[1]+1)*scale
+        pygame.draw.line(surface, (255, 0, 0), (rayStartX, rayStartY), (rayStartX, rayEndY), width=5)
+
         # draw grid
-        pygame.draw.rect(surface, (0, 0, 0), (self.__pos[1]*scale, self.__pos[0]*scale, self.__w*scale, self.__h*scale), 2)
         for i in range(self.__h):
             for j in range(self.__w):
                 color = self.__grid[i][j]
@@ -131,13 +139,14 @@ class Board:
                 # when drawing, i and j are inverted
                 if color != 0.:
                     pygame.draw.rect(surface, COLORS[color], (pos_j, pos_i, scale, scale))
-                else:
-                    pygame.draw.rect(surface, (100, 100, 100), (pos_j, pos_i, scale, scale))
+                # else:
+                #     pygame.draw.rect(surface, (100, 100, 100), (pos_j, pos_i, scale, scale))
 
         # draw buffer
         for i, color in enumerate(self.__buffer):
             pygame.draw.rect(surface, (0, 0, 0), ((self.__pos[1]+i)*scale, (self.__pos[0]-1)*scale, scale, scale), 2)
             if color != 0.:
                 pygame.draw.rect(surface, COLORS[color], ((self.__pos[1]+i)*scale, (self.__pos[0]-1)*scale, scale, scale))
+
 
 

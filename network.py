@@ -1,8 +1,4 @@
-import pickle
 import numpy as np
-import time
-import socket
-
 from multiprocessing.connection import Client
 
 class Network:
@@ -104,13 +100,3 @@ class Network:
 
     def getInitialBoardState(self):
         return self.__initial_board_state
-
-
-
-# game_state = {"state" : np.array([1, 2, 3]), "bbc" : "aaa"}
-
-# n = Network("localhost", 5001, "Antoijne")
-# n.start()
-# msg = game_state
-# n.sendUpdate(msg)
-# n.getUpdate()

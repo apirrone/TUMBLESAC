@@ -15,7 +15,7 @@ class Server:
         self.__connexions   = {}
 
         self.__socket       = Listener((self.__ip, self.__port))
-        self.__board        = Board((0, 0), nbColors=6, buffer_size=3, w=5)
+        self.__board        = Board((0, 0), nbColors=4, buffer_size=3, w=5)
         self.__boardSize    = 50
         self.__board.populate(self.__boardSize) # TODO choose this number well
 
@@ -33,7 +33,6 @@ class Server:
         self.__game_over = False
         self.__board.populate(self.__boardSize)
 
-
     def __new_player(self, conn, id, name):
         print("New player ", name)
         self.__players[id] = {"name" : name, "boardState" : None, "charJPos" : None, "ready" : False, "score" : 0}
@@ -43,8 +42,6 @@ class Server:
         print("player ", self.__players[id]["name"], "disconnected")
         del self.__players[id]
 
-
-    # TODO handle disconnections properly
     def __threaded_server(self, c, id):
         self.__connexions[id] = c
         first_handshake = True
@@ -80,7 +77,6 @@ class Server:
                 self.__game_over = True
                 self.__winner = self.__players[id]["name"]
                 self.__players[id]["score"] += 1
-                print("coucou")
 
             elif msg["type"] == "client_update":
                 self.__players[id]["boardState"] = msg["boardState"]

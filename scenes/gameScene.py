@@ -34,8 +34,6 @@ class GameScene(Scene):
 
         self.__next_action = None
 
-
-
     def input(self):
         events, action = super().input()
 
@@ -55,7 +53,6 @@ class GameScene(Scene):
 
         if self.__next_action is not None:
             action = self.__next_action
-            # self.__next_action = None
 
         return events, action
 
@@ -86,17 +83,15 @@ class GameScene(Scene):
             if self.__network is not None:
                 if not self.__network.winSent():
                     self.__network.sendWin()
-                    print("SENDWIN")
             else:
                 self.__next_action = "go_to_title_scene"
 
     def draw(self, screen):
         super().draw()
 
-        self.__board.draw(self._surface, self._scale)
+        self.__board.draw(self._surface, self._scale, self.__character.getJPos())
         self.__board.highlightBlock(self._surface, self._scale, self.__character.getJPos())
         self.__character.draw(self._surface, self._scale)
-
 
         if self.__network is not None:
             label = pygame.font.SysFont(None, self._scale).render(self.__network.getMyName(), 1, (0, 0, 0))
@@ -106,7 +101,7 @@ class GameScene(Scene):
                 label = pygame.font.SysFont(None, self._scale).render(name, 1, (0, 0, 0))
                 self._surface.blit(label, (board.getPos()[1]*self._scale, 0))
                 if id != self.__network.getMyID():
-                    board.draw(self._surface, self._scale)
+                    board.draw(self._surface, self._scale, self.__playersCharacters[id].getJPos())
                     self.__playersCharacters[id].draw(self._surface, self._scale)
 
 

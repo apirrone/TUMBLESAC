@@ -4,6 +4,7 @@ import json
 import sys
 sys.path.append("../")
 import numpy as np
+
 class PlayersTable():
     def __init__(self, pos, scale):
         self.__pos     = pos
@@ -39,7 +40,6 @@ class LobbyScene(MenuScene):
         self._buttons[0].setHighlighted(True)
 
         self.__cfg = json.load(open("online.cfg"))
-        self.__myName = self.__cfg["name"]
 
         self.__playersTable = PlayersTable((1, 1), self._scale)
 
