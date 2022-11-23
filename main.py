@@ -54,10 +54,13 @@ while running:
         gameScene = GameScene(window_size[0], window_size[1], 55, lobbyScene.getNetwork())
         current_scene = gameScene
 
-    ret = current_scene.update(dt)
+    current_scene.update(dt)
+    if gameScene is not None:
+        game_over, winner = gameScene.getNetwork().isGameOver()
 
-    if ret is not None:
-        if ret == "game_over":
+        if game_over:
+            print("WINNER : ", winner)
+            gameScene.getNetwork().disconnect()
             gameScene = None
             lobbyScene = None
             current_scene = titleMenuScene

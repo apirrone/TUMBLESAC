@@ -17,6 +17,7 @@ class Network:
         self.__players             = {}
         self.__initial_board_state = None
         self.__game_over           = False
+        self.__winner              = None
 
         self.__game_started        = False
         self.__i                   = 0
@@ -48,7 +49,7 @@ class Network:
         return self.__game_started
     
     def isGameOver(self):
-        return self.__game_over
+        return self.__game_over, self.__winner
 
     def sendWin(self):
         msg = {"type" : "win"}
@@ -61,6 +62,7 @@ class Network:
     def disconnect(self):
         msg = {"type" : "disconnect"}
         self.__conn.send(msg)
+
 
     def getUpdate(self):
         msg = {"type" : "request_update", "tmp":self.__i }
@@ -76,9 +78,8 @@ class Network:
             else:
                 self.__game_started = True
 
-        if msg["type"] == "game_over":
-            winner = msg["data"]
-            self.__game_over = True
+            self.__game_over = msg["game_over"]
+            self.__winner    = msg["winner"]
 
     def getPlayers(self):
         return self.__players

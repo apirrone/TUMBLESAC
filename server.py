@@ -16,12 +16,13 @@ class Server:
 
         self.__socket       = Listener((self.__ip, self.__port))
         self.__board        = Board((0, 0), nbColors=6, buffer_size=3, w=5)
-        self.__board.populate(150) # TODO choose this number well
+        self.__board.populate(3) # TODO choose this number well
 
         self.__game_started = False
         self.__game_ready   = False
 
         self.__game_over    = False
+        self.__winner       = None
 
         self.__sessions     = {}
 
@@ -71,9 +72,10 @@ class Server:
                     self.__game_started = True
 
             elif msg["type"] == "win":
-                msg = {"type" : "game_over", "data" : None}
+                # msg = {"type" : "game_over", "data" : self.__players[id]["name"]}
                 self.__game_over = True
-                conn.send(msg)                
+                self.__winner = self.__players[id]["name"]
+                # conn.send(msg)                
 
             elif msg["type"] == "send_update":
                 self.__players[id]["boardState"] = msg["boardState"]
@@ -93,9 +95,22 @@ class Server:
                 self.__game_ready = start
                 if not self.__game_started:
                     initial_board_state = self.__board.getState()
-                    msg = {"type" : "game_update", "data" : self.__players, "game_started" : self.__game_started, "initial_board_state" : initial_board_state}
+                    msg = {
+                        "type" : "game_update",
+                        "data" : self.__players,
+                        "game_started" : self.__game_started, 
+                         "game_over"    : self.__game_over,
+                         "winner"       : self.__winner,
+                        "initial_board_state" : initial_board_state
+                    }
                 else:
-                    msg = {"type" : "game_update", "data" : self.__players, "game_started" : self.__game_started}
+                    msg = {
+                        "type" : "game_update", 
+                        "data" : self.__players,
+                         "game_started" : self.__game_started,
+                         "game_over"    : self.__game_over,
+                         "winner"       : self.__winner
+                        }
 
                 conn.send(msg)
 

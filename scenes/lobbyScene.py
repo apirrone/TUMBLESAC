@@ -72,9 +72,9 @@ class LobbyScene(MenuScene):
         if not self.__connexion_status:
             self.__connexion_status = self.__network.start()
             return
-        print("coucou1")
+
         self.__network.getUpdate()
-        print("coucou2")
+
         # TODO do better, this is so bad
         self.__playersTable.clear()
         for id, player in self.__network.getPlayers().items():

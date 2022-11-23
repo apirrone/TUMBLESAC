@@ -53,6 +53,9 @@ class GameScene(Scene):
 
         return events, action
 
+    def getNetwork(self):
+        return self.__network
+
     def update(self, dt):
         super().update(dt)
 
@@ -76,8 +79,7 @@ class GameScene(Scene):
         if self.__board.isBoardEmpty():
             if self.__network is not None:
                 self.__network.sendWin()
-                self.__network.disconnect()
-                return "game_over"
+                # self.__network.disconnect()
             else:
                 print("WIN")
                 exit()
