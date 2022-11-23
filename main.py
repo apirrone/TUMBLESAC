@@ -24,7 +24,7 @@ else:
 
 font = pygame.font.SysFont(None, 20)
 
-titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55)
+titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
 gameScene = None#GameScene(window_size[0], window_size[1], 55)
 onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55)
 lobbyScene = None
@@ -67,9 +67,9 @@ while running:
 
         if game_over:
             print("WINNER : ", winner)
-            network.reset()
+            lobbyScene.reset(winner)
             gameScene = None
-            lobbyScene.reset()
+            network.reset()
             current_scene = lobbyScene
 
     current_scene.draw(screen)

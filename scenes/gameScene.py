@@ -32,6 +32,8 @@ class GameScene(Scene):
 
         self.__character = Character((50, 50, 50), self.__board.getGridSize(), self.__board.getPos())
 
+        self.__next_action = None
+
 
 
     def input(self):
@@ -50,6 +52,10 @@ class GameScene(Scene):
 
         if action == "esc":
             action = "go_to_title_scene"
+
+        if self.__next_action is not None:
+            action = self.__next_action
+            # self.__next_action = None
 
         return events, action
 
@@ -80,11 +86,10 @@ class GameScene(Scene):
             if self.__network is not None:
                 self.__network.sendWin()
             else:
-                print("WIN")
-                exit()
+                self.__next_action = "go_to_title_scene"
 
     def draw(self, screen):
-        super().draw(screen)
+        super().draw()
 
         self.__board.draw(self._surface, self._scale)
         self.__board.highlightBlock(self._surface, self._scale, self.__character.getJPos())

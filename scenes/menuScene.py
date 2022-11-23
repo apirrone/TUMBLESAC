@@ -97,11 +97,11 @@ class MenuScene(Scene):
                 button.setHighlighted(False)
 
 
-    def draw(self, screen):
-        super().draw(screen)
+    def draw(self):
+        super().draw()
         for button in self._buttons:
             button.draw(self._surface)
 
-        screen.blit(self._surface, (0, 0))
+        self._surface.blit(self._surface, (0, 0))
 
 

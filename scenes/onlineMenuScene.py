@@ -21,4 +21,5 @@ class OnlineMenuScene(MenuScene):
         super().update(dt)
 
     def draw(self, screen):
-        super().draw(screen)
+        super().draw()
+        screen.blit(self._surface, (0, 0))

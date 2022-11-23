@@ -43,29 +43,32 @@ class LobbyScene(MenuScene):
 
         self.__connexion_status = self.__network.start()
 
+        self.__last_winner = ""
+
     def input(self):
         events, action = super().input()
 
         if action == "esc":
             action = "go_to_online_scene"
 
-        if action == "ready":
-            self.__network.sendReady(True)
-        if action == "not_ready":
-            self.__network.sendReady(False)
+        if self.__connexion_status:
+            if action == "ready":
+                self.__network.sendReady(True)
+            if action == "not_ready":
+                self.__network.sendReady(False)
 
-        if action == "start_game":
-            self.__network.sendStartGame()
-            action = ""
+            if action == "start_game":
+                self.__network.sendStartGame()
+                action = ""
 
-        if self.__network.isGameStarted():
-            print("aaaaaaaaa")
-            action = "start_game"
+            if self.__network.isGameStarted():
+                action = "start_game"
 
         return events, action
 
-    def reset(self):
+    def reset(self, winner=""):
         self._buttons[0].toggle()
+        self.__last_winner = winner
 
     def getNetwork(self):
         return self.__network
@@ -87,7 +90,7 @@ class LobbyScene(MenuScene):
 
 
     def draw(self, screen):
-        super().draw(screen)
+        super().draw()
 
         self.__playersTable.draw(self._surface)
         if self.__connexion_status:
@@ -98,5 +101,8 @@ class LobbyScene(MenuScene):
         label = pygame.font.SysFont(None, self._scale).render(msg, 1, (0, 0, 0))
 
         self._surface.blit(label, (0, 0))
+
+        label = pygame.font.SysFont(None, self._scale).render("Last winner : "+str(self.__last_winner), 1, (0, 0, 0))
+        self._surface.blit(label, (6.5*self._scale, 16*self._scale))
 
         screen.blit(self._surface, (0, 0))

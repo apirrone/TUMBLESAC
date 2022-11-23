@@ -7,6 +7,7 @@ class Scene:
         self._surface          = pygame.Surface((self._w, self._h))
         self._background_color = (255, 255, 255)
         self._scale            = scale
+        self._font             = pygame.font.SysFont(None, self._scale)
 
     def input(self):
         action = None
@@ -23,5 +24,5 @@ class Scene:
     def update(self, dt):
         pass
 
-    def draw(self, screen):
+    def draw(self):
         self._surface.fill(self._background_color)
