@@ -16,7 +16,7 @@ class Server:
 
         self.__socket       = Listener((self.__ip, self.__port))
         self.__board        = Board((0, 0), nbColors=6, buffer_size=3, w=5)
-        self.__boardSize    = 3
+        self.__boardSize    = 50
         self.__board.populate(self.__boardSize) # TODO choose this number well
 
         self.__game_started = False
