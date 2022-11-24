@@ -145,8 +145,6 @@ class Board:
     def __checkBuffer(self):
         ok = True
 
-
-
         colors = self.__buffer[np.nonzero(self.__buffer)]
 
         if len(colors) > 1:
@@ -160,19 +158,6 @@ class Board:
                     ok = False
                 else:
                     self.reset()
-
-
-
-        # # if np.count_nonzero(self.__buffer) == len(self.__buffer):
-        # # if np.all(self.__buffer == self.__buffer[0]): # are all the colors in the buffer the same
-        #     if len(colors) == self.__buffer_size:
-        #         self.__buffer = np.zeros(self.__buffer_size)
-        #         self.__blocksShot += self.__buffer_size
-        #     else:
-        #         if self.__infinite:
-        #             ok = False
-        #         else:
-        #             self.reset()
 
         return ok
 
