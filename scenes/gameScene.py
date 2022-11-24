@@ -86,7 +86,7 @@ class GameScene(Scene):
                     charJPos = player["charJPos"]
                     if charJPos is not None:
                         self.__playersCharacters[id].setJPos(charJPos)
-                        
+
         if self.__board.isBoardEmpty():
             if self.__network is not None:
                 if not self.__network.winSent():
@@ -105,10 +105,14 @@ class GameScene(Scene):
         self.__board.draw(self._surface, self._scale, self.__character.getJPos(), self._dt)
         self.__board.highlightBlock(self._surface, self._scale, self.__character.getJPos())
         self.__character.draw(self._surface, self._scale)
+        if self.__infinite:
+            label = pygame.font.SysFont(None, self._scale).render("Score : "+str(self.__score), 1, (0, 0, 0))
+            self._surface.blit(label, (7*self._scale, 10*self._scale))
 
         if self.__network is not None:
             label = pygame.font.SysFont(None, self._scale).render(self.__network.getMyName(), 1, (0, 0, 0))
             self._surface.blit(label, (self.__board.getPos()[1]*self._scale, 0))
+
             for id, board in self.__playersBoards.items():
                 name = self.__playersNames[id]
                 label = pygame.font.SysFont(None, self._scale).render(name, 1, (0, 0, 0))
@@ -119,7 +123,3 @@ class GameScene(Scene):
 
 
         screen.blit(self._surface, (0, 0))
-
-
-
-
