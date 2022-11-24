@@ -44,7 +44,7 @@ class GameScene(Scene):
                     self.__character.move(-1)
                 elif event.key == pygame.K_RIGHT:
                     self.__character.move(1)
-                elif event.key == pygame.K_SPACE:
+                elif event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                     ok = self.__board.shoot(self.__character.getJPos())
                 elif event.key == pygame.K_DOWN:
                     if not self.__infinite:
