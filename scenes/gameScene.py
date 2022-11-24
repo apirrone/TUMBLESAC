@@ -10,10 +10,11 @@ class GameScene(Scene):
         self.__network   = network
         self.__infinite  = infinite
         self.__board     = Board((2, 1), infinite=self.__infinite)
+        self.__score     = 0
 
 
         if self.__network is None:
-            self.__board.populate(30)
+            self.__board.populate(100)
         else:
             self.__board.populateFromState(self.__network.getInitialBoardState())
 
@@ -49,9 +50,7 @@ class GameScene(Scene):
                     if not self.__infinite:
                         self.__board.reset()
 
-
         if action == "esc" or not ok:
-            self.showScore()
             action = "go_to_title_scene"
 
         if self.__next_action is not None:
@@ -59,22 +58,11 @@ class GameScene(Scene):
 
         return events, action
 
-    def showScore(self):
-        pass
-        # label = pygame.font.SysFont(None, self._scale).render("Score : "+str(self.__board.getBlocksShot()), 1, (0, 0, 0))
-        # self._surface.blit(label, (0, 0))
-        # label = pygame.font.SysFont(None, self._scale).render("Press return", 1, (0, 0, 0))
-        # self._surface.blit(label, (0, 1))
-        # quit = False
-
-        # while not quit:
-        #     print("coucou")
-        #     events =  pygame.event.get()
-        #     for event in events:
-        #         if event.type == pygame.KEYDOWN:
-        #             if event.key == pygame.K_RETURN:            
-        #                 quit = True
-
+    def getScore(self):
+        if self.__infinite:
+            return self.__score
+        else:
+            return 0
 
     def getNetwork(self):
         return self.__network
@@ -107,10 +95,9 @@ class GameScene(Scene):
                 self.__next_action = "go_to_title_scene"
 
         if self.__board.isBoardLost():
-            self.showScore()
-
-
             self.__next_action = "go_to_title_scene"
+
+        self.__score = self.__board.getBlocksShot()
 
     def draw(self, screen):
         super().draw()
@@ -127,7 +114,7 @@ class GameScene(Scene):
                 label = pygame.font.SysFont(None, self._scale).render(name, 1, (0, 0, 0))
                 self._surface.blit(label, (board.getPos()[1]*self._scale, 0))
                 if id != self.__network.getMyID():
-                    board.draw(self._surface, self._scale, self.__playersCharacters[id].getJPos())
+                    board.draw(self._surface, self._scale, self.__playersCharacters[id].getJPos(), self._dt)
                     self.__playersCharacters[id].draw(self._surface, self._scale)
 
 

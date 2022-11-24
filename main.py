@@ -13,6 +13,8 @@ window_size=(1000, 1000)
 FULLSCREEN = False
 
 pygame.init()
+pygame.display.set_caption('TUMBLESAC')
+
 clock = pygame.time.Clock()
 
 # fullscreen, resizing, resolutions https://www.youtube.com/watch?v=edJZOQwrMKw
@@ -53,6 +55,8 @@ while running:
         gameScene = GameScene(window_size[0], window_size[1], 55, infinite=True)
         current_scene = gameScene
     elif action == "go_to_title_scene":
+        if gameScene is not None:
+            titleMenuScene.updateHighScore(gameScene.getScore())
         current_scene = titleMenuScene
     elif action == "go_to_online_scene":
         current_scene = onlineMenuScene

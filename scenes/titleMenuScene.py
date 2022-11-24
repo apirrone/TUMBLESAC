@@ -1,5 +1,7 @@
 import pygame
 from scenes.menuScene import MenuScene, Button
+import pickle
+import os
 
 class TitleMenuScene(MenuScene):
     def __init__(self, w, h, scale, title):
@@ -12,6 +14,13 @@ class TitleMenuScene(MenuScene):
         self._buttons.append(Button("Exit", (1, 11), 5, 2, self._scale, "exit_game"))
         self._buttons[0].setHighlighted(True)
 
+        if not os.path.exists("highscore.pckl"):
+            f = open('highscore.pckl', 'wb')
+            pickle.dump({"highscore" : 0}, f)
+            f.close()
+
+        self.__highscore = pickle.load(open("highscore.pckl", "rb"))["highscore"]
+
     def input(self):
         events, action = super().input()
 
@@ -23,10 +32,23 @@ class TitleMenuScene(MenuScene):
     def update(self, dt):
         super().update(dt)
 
+    def updateHighScore(self, score):
+        if score > self.__highscore:
+            self.__highscore = score
+            f = open('highscore.pckl', 'wb')
+            pickle.dump({"highscore" : score}, f)
+            f.close()
+
+
+
     def draw(self, screen):
         super().draw()
 
         label = self._font.render(self.__title, 1, (0, 0, 0))
         self._surface.blit(label, (10*self._scale, 7*self._scale))
+
+
+        label = self._font.render("Infinite mode high score : "+str(self.__highscore), 1, (0, 0, 0))
+        self._surface.blit(label, (7*self._scale, 10*self._scale))
 
         screen.blit(self._surface, (0, 0))

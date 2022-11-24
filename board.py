@@ -29,9 +29,6 @@ class Board:
     def __shiftBoardDown(self):
         if self.__grid_buffer is None or np.all(self.__grid_buffer[-1, :]) == 0: # if contains one zero
             self.__grid_buffer = self.__populateGrid(30, grid=self.__grid_buffer, reverse=True)
-            print("pop")
-
-        # if np.all(self.__grid_buffer[:1, :]) == 0: # if contains one zero
 
         row = self.__grid_buffer[-1, :]        
         self.__grid = np.vstack((row, self.__grid))
@@ -67,7 +64,8 @@ class Board:
                     return (i-1, charJPos)
 
     def __getSpeed(self):
-        speed = max(1, np.exp(self.__blocksShot/17))
+        # speed = max(1, np.exp(self.__blocksShot/17))
+        speed = max(1, (self.__blocksShot/17)**2)
         return speed
 
     def getBlocksShot(self):
@@ -100,7 +98,11 @@ class Board:
         for i in range(0, nb_blocks, self.__buffer_size):
             color = np.random.choice(self.__colors)
             possiblePositions = self.__getPossiblePositions(grid, reverse=reverse)
-            indicesPositions  = np.random.choice(len(possiblePositions), self.__buffer_size, replace=False)
+            try:
+                indicesPositions  = np.random.choice(len(possiblePositions), self.__buffer_size, replace=False)
+            except ValueError as e:
+                print(e)
+                continue
 
             for index in indicesPositions:
                 pos = possiblePositions[index]
@@ -158,6 +160,7 @@ class Board:
         return np.count_nonzero(self.__grid) == 0
 
     def shoot(self, charJPos):
+        ok = True
         blockPos = self.__getHighlightedBlock(charJPos)
         if blockPos is not None:
             color = self.__grid[blockPos[0]][blockPos[1]]
