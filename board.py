@@ -25,6 +25,8 @@ class Board:
         self.__grid_backup = None
 
         self.__blocksShot  = 0
+        self.__lastColorShot = None
+        self.__missedShot = False # one more try if you shoot on a wrong color block while you already had a different color in buffer
 
     def __shiftBoardDown(self):
         if self.__grid_buffer is None or np.all(self.__grid_buffer[-1, :]) == 0: # if contains one zero
@@ -128,6 +130,8 @@ class Board:
     def reset(self):
         self.__grid = self.__grid_backup.copy()
         self.__buffer = np.zeros(self.__buffer_size)
+        self.__lastColorShot = None # reset the misinput saver
+        self.__missedShot = False
 
     def getGridSize(self):
         return (self.__w, self.__h)
@@ -144,7 +148,7 @@ class Board:
 
     def __checkBuffer(self):
         ok = True
-        if np.count_nonzero(self.__buffer) == len(self.__buffer):
+        if  np.count_nonzero(self.__buffer) == len(self.__buffer): # buffer is full
             if np.all(self.__buffer == self.__buffer[0]): # are all the colors in the buffer the same
                 self.__buffer = np.zeros(self.__buffer_size)
                 self.__blocksShot += self.__buffer_size
@@ -156,19 +160,50 @@ class Board:
 
         return ok
 
+    def checkLastShot(self, color):
+        """
+            Checks if last shot is the same color as the previous block in buffer
+            to avoid one missed input. 
+            :param: color: the color of the last shot
+        """
+        print(f"entry: {self.__lastColorShot=}")
+        print(f"{self.__buffer=}")
+        nz = np.count_nonzero(self.__buffer) + 1 
+        print(f"{nz=}")
+        if nz == 1: # buffer empty
+            print("first color in buffer")
+            self.__lastColorShot = color
+            self.__missedShot = False
+            return True
+        # as we anticipate, we are above real number of blocks inside buffer
+        if nz  >= 1: # at least one color block in buffer
+                if not self.__lastColorShot: # first color entering buffer
+                    raise ValueError("lastColorShot")
+                else:
+                    if self.__lastColorShot == color:
+                        self.__missedShot = False
+                    else:
+                        if self.__missedShot:
+                            print("different color and already missed")
+                        else:
+                            self.__missedShot = True
+                            print("first miss")
+                            return False
+        return True
+
+
     def isBoardEmpty(self):
         return np.count_nonzero(self.__grid) == 0
 
     def shoot(self, charJPos):
-        ok = True
+        ok = True 
         blockPos = self.__getHighlightedBlock(charJPos)
         if blockPos is not None:
-            color = self.__grid[blockPos[0]][blockPos[1]]
-            self.__buffer[np.count_nonzero(self.__buffer)] = color
-            self.__grid[blockPos[0]][blockPos[1]] = 0
-
-            ok = self.__checkBuffer()
-            # self.__shiftBoardDown()
+            color = self.__grid[blockPos[0]][blockPos[1]] # color of the block being shot
+            if self.checkLastShot(color):
+                self.__buffer[np.count_nonzero(self.__buffer)] = color # filling the buffer
+                self.__grid[blockPos[0]][blockPos[1]] = 0 # erasing block from board
+                ok = self.__checkBuffer()
 
         if not self.__infinite:
             ok = True
