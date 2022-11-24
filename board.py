@@ -176,8 +176,6 @@ class Board:
 
         return ok
 
-<<<<<<< HEAD
-=======
     def checkLastShot(self, color):
         """
             Checks if last shot is the same color as the previous block in buffer
@@ -204,8 +202,6 @@ class Board:
             raise ValueError("nz")
         return True
 
-
->>>>>>> 30bd5cd (remove print)
     def isBoardEmpty(self):
         return np.count_nonzero(self.__grid) == 0
 
