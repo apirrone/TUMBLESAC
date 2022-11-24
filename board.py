@@ -214,10 +214,12 @@ class Board:
         blockPos = self.__getHighlightedBlock(charJPos)
         if blockPos is not None:
             color = self.__grid[blockPos[0]][blockPos[1]]
-            self.__buffer[np.count_nonzero(self.__buffer)] = color
-            self.__grid[blockPos[0]][blockPos[1]] = 0
 
-            ok = self.__checkBuffer()
+            if self.checkLastShot(color):
+                self.__buffer[np.count_nonzero(self.__buffer)] = color
+                self.__grid[blockPos[0]][blockPos[1]] = 0
+
+                ok = self.__checkBuffer()
             # self.__shiftBoardDown()
 
         if not self.__infinite:
