@@ -4,12 +4,12 @@ from board import Board
 from character import Character
 
 class GameScene(Scene):
-    def __init__(self, w, h, scale, network=None):
+    def __init__(self, w, h, scale, network=None, infinite=False):
         super().__init__(w, h, scale)
 
-        self.__network = network
-
-        self.__board     = Board((2, 1))
+        self.__network   = network
+        self.__infinite  = infinite
+        self.__board     = Board((2, 1), infinite=self.__infinite)
 
 
         if self.__network is None:
@@ -36,7 +36,7 @@ class GameScene(Scene):
 
     def input(self):
         events, action = super().input()
-
+        ok = True
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -44,17 +44,37 @@ class GameScene(Scene):
                 elif event.key == pygame.K_RIGHT:
                     self.__character.move(1)
                 elif event.key == pygame.K_SPACE:
-                    self.__board.shoot(self.__character.getJPos())
+                    ok = self.__board.shoot(self.__character.getJPos())
                 elif event.key == pygame.K_DOWN:
-                    self.__board.reset()
+                    if not self.__infinite:
+                        self.__board.reset()
 
-        if action == "esc":
+
+        if action == "esc" or not ok:
+            self.showScore()
             action = "go_to_title_scene"
 
         if self.__next_action is not None:
             action = self.__next_action
 
         return events, action
+
+    def showScore(self):
+        pass
+        # label = pygame.font.SysFont(None, self._scale).render("Score : "+str(self.__board.getBlocksShot()), 1, (0, 0, 0))
+        # self._surface.blit(label, (0, 0))
+        # label = pygame.font.SysFont(None, self._scale).render("Press return", 1, (0, 0, 0))
+        # self._surface.blit(label, (0, 1))
+        # quit = False
+
+        # while not quit:
+        #     print("coucou")
+        #     events =  pygame.event.get()
+        #     for event in events:
+        #         if event.type == pygame.KEYDOWN:
+        #             if event.key == pygame.K_RETURN:            
+        #                 quit = True
+
 
     def getNetwork(self):
         return self.__network
@@ -86,10 +106,16 @@ class GameScene(Scene):
             else:
                 self.__next_action = "go_to_title_scene"
 
+        if self.__board.isBoardLost():
+            self.showScore()
+
+
+            self.__next_action = "go_to_title_scene"
+
     def draw(self, screen):
         super().draw()
 
-        self.__board.draw(self._surface, self._scale, self.__character.getJPos())
+        self.__board.draw(self._surface, self._scale, self.__character.getJPos(), self._dt)
         self.__board.highlightBlock(self._surface, self._scale, self.__character.getJPos())
         self.__character.draw(self._surface, self._scale)
 

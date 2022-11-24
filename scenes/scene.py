@@ -8,6 +8,8 @@ class Scene:
         self._background_color = (255, 255, 255)
         self._scale            = scale
         self._font             = pygame.font.SysFont(None, self._scale)
+        self._t                = 0
+        self._dt               = 0
 
     def input(self):
         action = None
@@ -22,7 +24,8 @@ class Scene:
         return events, action
 
     def update(self, dt):
-        pass
+        self._dt = dt
+        self._t += dt
 
     def draw(self):
         self._surface.fill(self._background_color)

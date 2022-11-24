@@ -3,6 +3,7 @@ from scenes.gameScene import GameScene
 from scenes.titleMenuScene import TitleMenuScene
 from scenes.onlineMenuScene import OnlineMenuScene
 from scenes.lobbyScene import LobbyScene
+from scenes.modeSelectScene import ModeSelectScene
 import os
 from network import Network
 import json
@@ -42,8 +43,14 @@ while running:
 
     if action == "exit_game" : 
         running = False
+    elif action == "go_to_mode_select_scene":
+        modeSelectScene = ModeSelectScene(window_size[0], window_size[1], 55)
+        current_scene = modeSelectScene
     elif action == "go_to_play_scene":
         gameScene = GameScene(window_size[0], window_size[1], 55)
+        current_scene = gameScene
+    elif action == "infinite_game":
+        gameScene = GameScene(window_size[0], window_size[1], 55, infinite=True)
         current_scene = gameScene
     elif action == "go_to_title_scene":
         current_scene = titleMenuScene

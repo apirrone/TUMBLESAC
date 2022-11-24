@@ -7,7 +7,7 @@ class TitleMenuScene(MenuScene):
 
         self.__title = title
 
-        self._buttons.append(Button("Play", (1, 1), 5, 2, self._scale, "go_to_play_scene"))
+        self._buttons.append(Button("Play", (1, 1), 5, 2, self._scale, "go_to_mode_select_scene"))
         self._buttons.append(Button("Online", (1, 6), 5, 2, self._scale, "go_to_online_scene"))
         self._buttons.append(Button("Exit", (1, 11), 5, 2, self._scale, "exit_game"))
         self._buttons[0].setHighlighted(True)
