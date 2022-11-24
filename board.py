@@ -176,6 +176,36 @@ class Board:
 
         return ok
 
+<<<<<<< HEAD
+=======
+    def checkLastShot(self, color):
+        """
+            Checks if last shot is the same color as the previous block in buffer
+            to avoid one missed input. 
+            :param: color: the color of the last shot
+        """
+        nz = np.count_nonzero(self.__buffer) + 1 
+        if nz == 1: # buffer empty
+            self.__lastColorShot = color
+            self.__missedShot = False
+            return True
+        # as we anticipate, we are above real number of blocks inside buffer
+        if nz  >= 1: # at least one color block in buffer
+                if not self.__lastColorShot: # first color entering buffer
+                    raise ValueError("lastColorShot")
+                else:
+                    if self.__lastColorShot == color:
+                        self.__missedShot = False
+                    else:
+                        if not self.__missedShot:
+                            self.__missedShot = True
+                            return False
+        else:
+            raise ValueError("nz")
+        return True
+
+
+>>>>>>> 30bd5cd (remove print)
     def isBoardEmpty(self):
         return np.count_nonzero(self.__grid) == 0
 
