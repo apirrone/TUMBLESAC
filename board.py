@@ -144,10 +144,15 @@ class Board:
 
     def __checkBuffer(self):
         ok = True
-        if np.count_nonzero(self.__buffer) == len(self.__buffer):
-            if np.all(self.__buffer == self.__buffer[0]): # are all the colors in the buffer the same
-                self.__buffer = np.zeros(self.__buffer_size)
-                self.__blocksShot += self.__buffer_size
+
+        colors = self.__buffer[np.nonzero(self.__buffer)]
+
+        if len(colors) > 1:
+            if np.all(colors == colors[0]):
+                if len(colors) == self.__buffer_size:
+                    self.__buffer = np.zeros(self.__buffer_size)
+                    self.__blocksShot += self.__buffer_size
+
             else:
                 if self.__infinite:
                     ok = False
@@ -155,6 +160,32 @@ class Board:
                     self.reset()
 
         return ok
+
+    def checkLastShot(self, color):
+        """
+            Checks if last shot is the same color as the previous block in buffer
+            to avoid one missed input. 
+            :param: color: the color of the last shot
+        """
+        nz = np.count_nonzero(self.__buffer) + 1 
+        if nz == 1: # buffer empty
+            self.__lastColorShot = color
+            self.__missedShot = False
+            return True
+        # as we anticipate, we are above real number of blocks inside buffer
+        if nz  >= 1: # at least one color block in buffer
+                if not self.__lastColorShot: # first color entering buffer
+                    raise ValueError("lastColorShot")
+                else:
+                    if self.__lastColorShot == color:
+                        self.__missedShot = False
+                    else:
+                        if not self.__missedShot:
+                            self.__missedShot = True
+                            return False
+        else:
+            raise ValueError("nz")
+        return True
 
     def isBoardEmpty(self):
         return np.count_nonzero(self.__grid) == 0
@@ -164,11 +195,12 @@ class Board:
         blockPos = self.__getHighlightedBlock(charJPos)
         if blockPos is not None:
             color = self.__grid[blockPos[0]][blockPos[1]]
-            self.__buffer[np.count_nonzero(self.__buffer)] = color
-            self.__grid[blockPos[0]][blockPos[1]] = 0
 
-            ok = self.__checkBuffer()
-            # self.__shiftBoardDown()
+            if self.checkLastShot(color):
+                self.__buffer[np.count_nonzero(self.__buffer)] = color
+                self.__grid[blockPos[0]][blockPos[1]] = 0
+
+                ok = self.__checkBuffer()
 
         if not self.__infinite:
             ok = True
