@@ -216,7 +216,6 @@ class Board:
                 self.__grid[blockPos[0]][blockPos[1]] = 0
 
                 ok = self.__checkBuffer()
-            # self.__shiftBoardDown()
 
         if not self.__infinite:
             ok = True
