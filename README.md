@@ -8,7 +8,11 @@ At repo root level :
 pip install -e .
 ```
 
-You can then run the commands `tumblesac` and `tumblesac-server` anywhere you want
+Then you can run the command `tumblesac` to launch the game.
+
+Run `tumblesac_server` in a separate terminal to host a server.
+
+
 
 ## Online configuration
 
