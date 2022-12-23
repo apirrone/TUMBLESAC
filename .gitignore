@@ -1,3 +1,4 @@
 __pycache__/*
-scenes/__pycache__/*
-highscore.pckl
+config/highscore.pckl
+config/online.cfg
+tumblesac.egg-info/*

@@ -1,37 +1,45 @@
 import pygame
-from scenes.scene import Scene
-from board import Board
-from character import Character
+from tumblesac.scenes.scene import Scene
+from tumblesac.board import Board
+from tumblesac.character import Character
+
 
 class GameScene(Scene):
     def __init__(self, w, h, scale, network=None, infinite=False):
         super().__init__(w, h, scale)
 
-        self.__network   = network
-        self.__infinite  = infinite
-        self.__board     = Board((2, 1), infinite=self.__infinite)
-        self.__score     = 0
-
+        self.__network = network
+        self.__infinite = infinite
+        self.__board = Board((2, 1), infinite=self.__infinite)
+        self.__score = 0
 
         if self.__network is None:
             self.__board.populate(100)
         else:
             self.__board.populateFromState(self.__network.getInitialBoardState())
 
-            self.__playersBoards     = {}
-            self.__playersNames      = {}
+            self.__playersBoards = {}
+            self.__playersNames = {}
             self.__playersCharacters = {}
             i = 1
             for id, player in self.__network.getPlayers().items():
                 if id != self.__network.getMyID():
                     w, h = self.__board.getSize()
-                    self.__playersBoards[id] = Board((2, 1 + w*i + i))
-                    self.__playersBoards[id].populateFromState(self.__network.getInitialBoardState())
+                    self.__playersBoards[id] = Board((2, 1 + w * i + i))
+                    self.__playersBoards[id].populateFromState(
+                        self.__network.getInitialBoardState()
+                    )
                     self.__playersNames[id] = None
-                    self.__playersCharacters[id] = Character((0, 0, 255), self.__playersBoards[id].getGridSize(), self.__playersBoards[id].getPos())
+                    self.__playersCharacters[id] = Character(
+                        (0, 0, 255),
+                        self.__playersBoards[id].getGridSize(),
+                        self.__playersBoards[id].getPos(),
+                    )
                     i += 1
 
-        self.__character = Character((50, 50, 50), self.__board.getGridSize(), self.__board.getPos())
+        self.__character = Character(
+            (50, 50, 50), self.__board.getGridSize(), self.__board.getPos()
+        )
 
         self.__next_action = None
 
@@ -71,7 +79,9 @@ class GameScene(Scene):
         super().update(dt)
 
         if self.__network is not None:
-            self.__network.sendUpdate(self.__board.getState(), self.__character.getJPos())
+            self.__network.sendUpdate(
+                self.__board.getState(), self.__character.getJPos()
+            )
             self.__network.getUpdate()
 
             for id, player in self.__network.getPlayers().items():
@@ -102,24 +112,38 @@ class GameScene(Scene):
     def draw(self, screen):
         super().draw()
 
-        self.__board.draw(self._surface, self._scale, self.__character.getJPos(), self._dt)
-        self.__board.highlightBlock(self._surface, self._scale, self.__character.getJPos())
+        self.__board.draw(
+            self._surface, self._scale, self.__character.getJPos(), self._dt
+        )
+        self.__board.highlightBlock(
+            self._surface, self._scale, self.__character.getJPos()
+        )
         self.__character.draw(self._surface, self._scale)
         if self.__infinite:
-            label = pygame.font.SysFont(None, self._scale).render("Score : "+str(self.__score), 1, (0, 0, 0))
-            self._surface.blit(label, (7*self._scale, 10*self._scale))
+            label = pygame.font.SysFont(None, self._scale).render(
+                "Score : " + str(self.__score), 1, (0, 0, 0)
+            )
+            self._surface.blit(label, (7 * self._scale, 10 * self._scale))
 
         if self.__network is not None:
-            label = pygame.font.SysFont(None, self._scale).render(self.__network.getMyName(), 1, (0, 0, 0))
-            self._surface.blit(label, (self.__board.getPos()[1]*self._scale, 0))
+            label = pygame.font.SysFont(None, self._scale).render(
+                self.__network.getMyName(), 1, (0, 0, 0)
+            )
+            self._surface.blit(label, (self.__board.getPos()[1] * self._scale, 0))
 
             for id, board in self.__playersBoards.items():
                 name = self.__playersNames[id]
-                label = pygame.font.SysFont(None, self._scale).render(name, 1, (0, 0, 0))
-                self._surface.blit(label, (board.getPos()[1]*self._scale, 0))
+                label = pygame.font.SysFont(None, self._scale).render(
+                    name, 1, (0, 0, 0)
+                )
+                self._surface.blit(label, (board.getPos()[1] * self._scale, 0))
                 if id != self.__network.getMyID():
-                    board.draw(self._surface, self._scale, self.__playersCharacters[id].getJPos(), self._dt)
+                    board.draw(
+                        self._surface,
+                        self._scale,
+                        self.__playersCharacters[id].getJPos(),
+                        self._dt,
+                    )
                     self.__playersCharacters[id].draw(self._surface, self._scale)
-
 
         screen.blit(self._surface, (0, 0))
