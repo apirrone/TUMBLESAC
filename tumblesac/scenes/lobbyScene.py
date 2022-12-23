@@ -51,7 +51,9 @@ class LobbyScene(MenuScene):
     def __init__(self, w, h, scale, network):
         super().__init__(w, h, scale)
 
-        package_root_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../')
+        package_root_dir = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "../"
+        )
 
         self.__onlineFilePath = os.path.join(package_root_dir, "config", "online.cfg")
 
