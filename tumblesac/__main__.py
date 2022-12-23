@@ -6,6 +6,7 @@ from tumblesac.scenes.lobbyScene import LobbyScene
 from tumblesac.scenes.modeSelectScene import ModeSelectScene
 from tumblesac.network import Network
 import json
+import os
 
 
 def main():
@@ -32,8 +33,8 @@ def main():
 
     current_scene = titleMenuScene
     # current_scene = lobbyScene
-
-    cfg = json.load(open("config/online.cfg"))
+    package_root_dir = os.path.dirname(os.path.dirname(__file__))
+    cfg = json.load(open(os.path.join(package_root_dir, "config", "online.cfg")))
     network = Network(cfg["ip"], cfg["port"], cfg["name"])
 
     dt = clock.tick()  # is this really dt ?

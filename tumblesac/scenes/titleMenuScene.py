@@ -7,7 +7,9 @@ class TitleMenuScene(MenuScene):
     def __init__(self, w, h, scale, title):
         super().__init__(w, h, scale)
 
-        self.__highscoreFilePath = "config/highscore.pckl"
+        package_root_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../')
+
+        self.__highscoreFilePath = os.path.join(package_root_dir, "config", "highscore.pckl")
 
         self.__title = title
 

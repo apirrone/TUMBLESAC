@@ -1,7 +1,7 @@
 import pygame
 from tumblesac.scenes.menuScene import MenuScene, Button, ToggleButton
 import json
-
+import os
 import numpy as np
 
 
@@ -51,7 +51,9 @@ class LobbyScene(MenuScene):
     def __init__(self, w, h, scale, network):
         super().__init__(w, h, scale)
 
-        self.__onlineFilePath = "config/online.cfg"
+        package_root_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../')
+
+        self.__onlineFilePath = os.path.join(package_root_dir, "config", "online.cfg")
 
         self._buttons.append(
             ToggleButton("Ready", (1, 12), 5, 2, self._scale, "ready", "not_ready")

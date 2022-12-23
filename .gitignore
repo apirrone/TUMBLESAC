@@ -1,4 +1,4 @@
-__pycache__/*
+*.pyc
 config/highscore.pckl
 config/online.cfg
 tumblesac.egg-info/*
