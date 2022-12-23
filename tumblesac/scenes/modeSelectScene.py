@@ -1,12 +1,16 @@
-import pygame
-from scenes.menuScene import MenuScene, Button
+from tumblesac.scenes.menuScene import MenuScene, Button
+
 
 class ModeSelectScene(MenuScene):
     def __init__(self, w, h, scale):
         super().__init__(w, h, scale)
 
-        self._buttons.append(Button("Normal", (1, 1), 5, 2, self._scale, "go_to_play_scene"))
-        self._buttons.append(Button("Infinite", (1, 6), 5, 2, self._scale, "infinite_game"))
+        self._buttons.append(
+            Button("Normal", (1, 1), 5, 2, self._scale, "go_to_play_scene")
+        )
+        self._buttons.append(
+            Button("Infinite", (1, 6), 5, 2, self._scale, "infinite_game")
+        )
         self._buttons[0].setHighlighted(True)
 
     def input(self):

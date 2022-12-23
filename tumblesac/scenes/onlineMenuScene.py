@@ -1,5 +1,5 @@
-import pygame
-from scenes.menuScene import MenuScene, Button
+from tumblesac.scenes.menuScene import MenuScene, Button
+
 
 class OnlineMenuScene(MenuScene):
     def __init__(self, w, h, scale):
