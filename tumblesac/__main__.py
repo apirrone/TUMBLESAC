@@ -7,6 +7,8 @@ from tumblesac.scenes.modeSelectScene import ModeSelectScene
 from tumblesac.network import Network
 import json
 import os
+import subprocess
+import signal
 
 
 def main():
@@ -28,7 +30,6 @@ def main():
 
     titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
     gameScene = None  # GameScene(window_size[0], window_size[1], 55)
-    onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55)
     lobbyScene = None
 
     current_scene = titleMenuScene
@@ -36,6 +37,10 @@ def main():
     package_root_dir = os.path.dirname(os.path.dirname(__file__))
     cfg = json.load(open(os.path.join(package_root_dir, "config", "online.cfg")))
     network = Network(cfg["ip"], cfg["port"], cfg["name"])
+
+    onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55, cfg["port"])
+
+    host_subprocess = None
 
     dt = clock.tick()  # is this really dt ?
     running = True
@@ -63,9 +68,14 @@ def main():
         elif action == "join_game":
             lobbyScene = LobbyScene(window_size[0], window_size[1], 55, network)
             current_scene = lobbyScene
-        elif action == "host_game":
-            print("NOT WORKING")
-            print("RUN SERVER    SEPARATELY")
+        elif action == "hosting":
+            print("START HOSTING")
+            print("Running server in background ...")
+            host_subprocess = subprocess.Popen(["tumblesac_server"])
+        elif action == "not_hosting":
+            os.kill(host_subprocess.pid, signal.SIGTERM)
+            host_subprocess = None
+            print("STOP NOT_HOSTING")
         elif action == "start_game":
             print("start game")
             gameScene = GameScene(window_size[0], window_size[1], 55, network)
@@ -88,6 +98,8 @@ def main():
         dt = clock.tick()
 
     network.disconnect()
+    if host_subprocess is not None:
+        os.kill(host_subprocess.pid, signal.SIGTERM)
 
 
 if __name__ == "__main__":

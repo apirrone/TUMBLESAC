@@ -57,10 +57,22 @@ class Button:
 
 class ToggleButton(Button):
     def __init__(
-        self, text, pos, w, h, scale, action_state_true, action_state_false, state=False
+        self,
+        textTrue,
+        textFalse,
+        pos,
+        w,
+        h,
+        scale,
+        action_state_true,
+        action_state_false,
+        state=False,
     ):
-        super().__init__(text, pos, w, h, scale, action_state_true)
-
+        super().__init__(
+            textTrue if state else textFalse, pos, w, h, scale, action_state_true
+        )
+        self.__textTrue = textTrue
+        self.__textFalse = textFalse
         self.__state = state
         self.__action_state_true = action_state_true
         self.__action_state_false = action_state_false
@@ -95,6 +107,7 @@ class ToggleButton(Button):
 
     def toggle(self):
         self.__state = not self.__state
+        self._text = self.__textTrue if self.__state else self.__textFalse
 
 
 class MenuScene(Scene):
