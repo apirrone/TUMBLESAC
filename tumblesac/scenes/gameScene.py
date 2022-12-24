@@ -80,9 +80,9 @@ class GameScene(Scene):
 
         if self.__network is not None:
             self.__network.sendUpdate(
-                self.__board.getState(), self.__character.getJPos()
+                self.__board.getState(), self.__character.getJPos(), dt
             )
-            self.__network.getUpdate()
+            self.__network.getUpdate(dt)
 
             for id, player in self.__network.getPlayers().items():
                 if id != self.__network.getMyID():

@@ -120,7 +120,7 @@ class LobbyScene(MenuScene):
             self.__connexion_status = self.__network.start()
             return
 
-        self.__network.getUpdate()
+        self.__network.getUpdate(dt)
 
         # TODO do better, this is so bad
         self.__playersTable.clear()
