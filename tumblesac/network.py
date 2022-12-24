@@ -1,4 +1,5 @@
 from multiprocessing.connection import Client
+import time
 
 
 class Network:
@@ -18,6 +19,9 @@ class Network:
         self.__game_started = False
 
         self.__sent_win = False
+
+        self.__sendUpdateTimeout = 0
+        self.__getUpdateTimeout = 0
 
     def start(self):
         try:
@@ -63,16 +67,24 @@ class Network:
     def winSent(self):
         return self.__sent_win
 
-    def sendUpdate(self, boardState, charJPos):
+    def sendUpdate(self, boardState, charJPos, dt):
+        if self.__sendUpdateTimeout > 0:
+            self.__sendUpdateTimeout -= dt
+            return
         msg = {"type": "client_update", "boardState": boardState, "charJPos": charJPos}
         self.__conn.send(msg)
+        self.__sendUpdateTimeout = 0.1
 
     def disconnect(self):
         if self.__conn is not None:
             msg = {"type": "disconnect"}
             self.__conn.send(msg)
 
-    def getUpdate(self):
+    def getUpdate(self, dt):
+        if self.__getUpdateTimeout > 0:
+            self.__getUpdateTimeout -= dt
+            return
+
         msg = {"type": "request_update"}
         self.__conn.send(msg)
         msg = self.__conn.recv()
@@ -87,6 +99,7 @@ class Network:
 
             self.__game_over = msg["game_over"]
             self.__winner = msg["winner"]
+        self.__getUpdateTimeout = 0.1
 
     def getPlayers(self):
         return self.__players
