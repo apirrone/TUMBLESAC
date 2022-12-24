@@ -1,5 +1,6 @@
 from multiprocessing.connection import Client
-import time
+import requests
+import json
 
 
 class Network:
@@ -22,6 +23,11 @@ class Network:
 
         self.__sendUpdateTimeout = 0
         self.__getUpdateTimeout = 0
+
+        self.__highscoresUrl = "https://api.jsonbin.io/v3/b/63a6f7e115ab31599e23fef8"
+        self.__highscoresHeaders = {
+            "X-ACCESS-KEY": "$2b$10$hxyg4xmjB.IUyB6uaeFAOukAHDS71v1u4.jx6kHn9vAR4YqMFMh8i"
+        }
 
     def start(self):
         try:
@@ -112,3 +118,36 @@ class Network:
 
     def getInitialBoardState(self):
         return self.__initial_board_state
+
+    def getHighScores(self):
+
+        highscores = json.loads(
+            requests.get(
+                self.__highscoresUrl + "/latest",
+                json=None,
+                headers=self.__highscoresHeaders,
+            ).text
+        )["record"]
+
+        return highscores
+
+    def updateHighScores(self, score):
+        print("UPDATING HIGHSCORES ... ")
+        highscores = self.getHighScores()
+        if self.__name in highscores:
+            if score > int(highscores[self.__name]):
+                highscores[self.__name] = score
+        else:
+            highscores[self.__name] = score
+
+        requests.put(
+            self.__highscoresUrl, json=highscores, headers=self.__highscoresHeaders
+        )
+
+    # To test
+    def getNHighestScores(self, n=3):
+        highscores = self.getHighScores()
+        sorted_highscores = sorted(
+            highscores.items(), key=lambda item: item[1], reverse=True
+        )
+        return sorted_highscores[:n]
