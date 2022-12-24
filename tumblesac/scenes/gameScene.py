@@ -104,10 +104,10 @@ class GameScene(Scene):
                 if not self.__network.winSent():
                     self.__network.sendWin()
             else:
-                self.__next_action = "go_to_title_scene"
+                self.__next_action = "go_to_title_scene_normal"
 
         if self.__board.isBoardLost():
-            self.__next_action = "go_to_title_scene"
+            self.__next_action = "go_to_title_scene_infinite"
 
         self.__score = self.__board.getBlocksShot()
 

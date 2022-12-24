@@ -29,7 +29,7 @@ class OnlineMenuScene(MenuScene):
         events, action = super().input()
 
         if action == "esc":
-            action = "go_to_title_scene"
+            action = "go_to_title_scene_normal"
 
         return events, action
 
