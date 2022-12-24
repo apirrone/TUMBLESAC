@@ -59,8 +59,10 @@ class GameScene(Scene):
                         self.__board.reset()
 
         if action == "esc" or not ok:
-            action = "go_to_title_scene"
-
+            if self.__infinite:
+                action = "go_to_title_scene_infinite"
+            else:
+                action = "go_to_title_scene_normal"
         if self.__next_action is not None:
             action = self.__next_action
 

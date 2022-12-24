@@ -28,17 +28,17 @@ def main():
         screen = pygame.display.set_mode(window_size, pygame.FULLSCREEN)
         window_size = screen.get_size()
 
-    titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
-    gameScene = None  # GameScene(window_size[0], window_size[1], 55)
-    lobbyScene = None
-
-    current_scene = titleMenuScene
-    # current_scene = lobbyScene
     package_root_dir = os.path.dirname(os.path.dirname(__file__))
     cfg = json.load(open(os.path.join(package_root_dir, "config", "online.cfg")))
     network = Network(cfg["ip"], cfg["port"], cfg["name"])
 
+    titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
+    titleMenuScene.updateHighScores(network.getNHighestScores())
     onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55, cfg["port"])
+    gameScene = None  # GameScene(window_size[0], window_size[1], 55)
+    lobbyScene = None
+
+    current_scene = titleMenuScene
 
     host_subprocess = None
 
@@ -58,9 +58,12 @@ def main():
         elif action == "infinite_game":
             gameScene = GameScene(window_size[0], window_size[1], 55, infinite=True)
             current_scene = gameScene
-        elif action == "go_to_title_scene":
+        elif action == "go_to_title_scene_normal":
+            current_scene = titleMenuScene
+        elif action == "go_to_title_scene_infinite":
             if gameScene is not None:
-                titleMenuScene.updateHighScore(gameScene.getScore())
+                network.updateHighScores(gameScene.getScore())
+                titleMenuScene.updateHighScores(network.getNHighestScores())
             current_scene = titleMenuScene
         elif action == "go_to_online_scene":
             current_scene = onlineMenuScene
