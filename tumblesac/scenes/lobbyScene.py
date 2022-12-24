@@ -58,7 +58,7 @@ class LobbyScene(MenuScene):
         self.__onlineFilePath = os.path.join(package_root_dir, "config", "online.cfg")
 
         self._buttons.append(
-            ToggleButton("Ready", (1, 12), 5, 2, self._scale, "ready", "not_ready")
+            ToggleButton("Ready", "Ready", (1, 12), 5, 2, self._scale, "ready", "not_ready")
         )
         self._buttons.append(Button("Start", (1, 15), 5, 2, self._scale, "start_game"))
         self._buttons[0].setHighlighted(True)
