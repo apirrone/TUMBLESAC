@@ -7,10 +7,6 @@ class TitleMenuScene(MenuScene):
     def __init__(self, w, h, scale, title):
         super().__init__(w, h, scale)
 
-        package_root_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../')
-
-        self.__highscoreFilePath = os.path.join(package_root_dir, "config", "highscore.pckl")
-
         self.__title = title
 
         self._buttons.append(
@@ -22,12 +18,7 @@ class TitleMenuScene(MenuScene):
         self._buttons.append(Button("Exit", (1, 11), 5, 2, self._scale, "exit_game"))
         self._buttons[0].setHighlighted(True)
 
-        if not os.path.exists(self.__highscoreFilePath):
-            f = open(self.__highscoreFilePath, "wb")
-            pickle.dump({"highscore": 0}, f)
-            f.close()
-
-        self.__highscore = pickle.load(open(self.__highscoreFilePath, "rb"))["highscore"]
+        self.__highscores = None
 
     def input(self):
         events, action = super().input()
@@ -40,12 +31,8 @@ class TitleMenuScene(MenuScene):
     def update(self, dt):
         super().update(dt)
 
-    def updateHighScore(self, score):
-        if score > self.__highscore:
-            self.__highscore = score
-            f = open(self.__highscoreFilePath, "wb")
-            pickle.dump({"highscore": score}, f)
-            f.close()
+    def updateHighScores(self, scores):
+        self.__highscores = scores
 
     def draw(self, screen):
         super().draw()
@@ -53,9 +40,11 @@ class TitleMenuScene(MenuScene):
         label = self._font.render(self.__title, 1, (0, 0, 0))
         self._surface.blit(label, (10 * self._scale, 7 * self._scale))
 
-        label = self._font.render(
-            "Infinite mode high score : " + str(self.__highscore), 1, (0, 0, 0)
-        )
+        label = self._font.render("Infinite mode high scores : ", 1, (0, 0, 0))
         self._surface.blit(label, (7 * self._scale, 10 * self._scale))
+
+        for i, score in enumerate(self.__highscores):
+            label = self._font.render(str(score[0]) + " : " + str(score[1]), 1, (0, 0, 0))
+            self._surface.blit(label, (7 * self._scale, (12 + i) * self._scale))
 
         screen.blit(self._surface, (0, 0))

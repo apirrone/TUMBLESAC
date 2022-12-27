@@ -59,8 +59,10 @@ class GameScene(Scene):
                         self.__board.reset()
 
         if action == "esc" or not ok:
-            action = "go_to_title_scene"
-
+            if self.__infinite:
+                action = "go_to_title_scene_infinite"
+            else:
+                action = "go_to_title_scene_normal"
         if self.__next_action is not None:
             action = self.__next_action
 
@@ -80,9 +82,9 @@ class GameScene(Scene):
 
         if self.__network is not None:
             self.__network.sendUpdate(
-                self.__board.getState(), self.__character.getJPos()
+                self.__board.getState(), self.__character.getJPos(), dt
             )
-            self.__network.getUpdate()
+            self.__network.getUpdate(dt)
 
             for id, player in self.__network.getPlayers().items():
                 if id != self.__network.getMyID():
@@ -102,10 +104,10 @@ class GameScene(Scene):
                 if not self.__network.winSent():
                     self.__network.sendWin()
             else:
-                self.__next_action = "go_to_title_scene"
+                self.__next_action = "go_to_title_scene_normal"
 
         if self.__board.isBoardLost():
-            self.__next_action = "go_to_title_scene"
+            self.__next_action = "go_to_title_scene_infinite"
 
         self.__score = self.__board.getBlocksShot()
 
