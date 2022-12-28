@@ -4,6 +4,7 @@ from tumblesac.scenes.titleMenuScene import TitleMenuScene
 from tumblesac.scenes.onlineMenuScene import OnlineMenuScene
 from tumblesac.scenes.lobbyScene import LobbyScene
 from tumblesac.scenes.modeSelectScene import ModeSelectScene
+from tumblesac.scenes.retryMenuScene import RetryMenuScene
 from tumblesac.network import Network
 import json
 import os
@@ -35,6 +36,7 @@ def main():
     titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
     titleMenuScene.updateHighScores(network.getNHighestScores())
     onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55, cfg["port"])
+    retryMenuScene = RetryMenuScene(window_size[0], window_size[1], 55, "Infinite mode", network)
     gameScene = None  # GameScene(window_size[0], window_size[1], 55)
     lobbyScene = None
 
@@ -58,12 +60,14 @@ def main():
         elif action == "infinite_game":
             gameScene = GameScene(window_size[0], window_size[1], 55, infinite=True)
             current_scene = gameScene
-        elif action == "go_to_title_scene_normal":
-            current_scene = titleMenuScene
-        elif action == "go_to_title_scene_infinite":
-            if gameScene is not None:
-                network.updateHighScores(gameScene.getScore())
-                titleMenuScene.updateHighScores(network.getNHighestScores())
+        elif action == "go_to_retry_scene":
+            network.updateHighScores(gameScene.getScore())
+            titleMenuScene.updateHighScores(network.getNHighestScores())
+            current_scene = retryMenuScene
+        elif action == "retry_infinite_mode":
+            gameScene = GameScene(window_size[0], window_size[1], 55, infinite=True)
+            current_scene = gameScene
+        elif action == "go_to_title_scene":
             current_scene = titleMenuScene
         elif action == "go_to_online_scene":
             current_scene = onlineMenuScene
