@@ -1,7 +1,7 @@
 from multiprocessing.connection import Client
 import requests
 import json
-
+import threading
 
 class Network:
     def __init__(self, ip, port, name):
@@ -28,6 +28,9 @@ class Network:
         self.__highscoresHeaders = {
             "X-ACCESS-KEY": "$2b$10$hxyg4xmjB.IUyB6uaeFAOukAHDS71v1u4.jx6kHn9vAR4YqMFMh8i"
         }
+
+        self.__updating = False
+        self.__lastScore = 0
 
     def start(self):
         try:
@@ -132,6 +135,12 @@ class Network:
         return highscores
 
     def updateHighScores(self, score):
+        self.__lastScore = score
+        self.__updating = True
+        t = threading.Thread(target=self.t_updateHighScores, args=(score,))
+        t.start()
+
+    def t_updateHighScores(self, score):
         print("UPDATING HIGHSCORES ... ")
         highscores = self.getHighScores()
         if self.__name in highscores:
@@ -143,6 +152,8 @@ class Network:
         requests.put(
             self.__highscoresUrl, json=highscores, headers=self.__highscoresHeaders
         )
+        print("DONE !")
+        self.__updating = False
 
     # To test
     def getNHighestScores(self, n=3):
@@ -151,3 +162,9 @@ class Network:
             highscores.items(), key=lambda item: item[1], reverse=True
         )
         return sorted_highscores[:n]
+
+    def isUpdating(self):
+        return self.__updating
+
+    def getLastScore(self):
+        return self.__lastScore

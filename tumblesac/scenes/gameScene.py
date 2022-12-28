@@ -49,9 +49,15 @@ class GameScene(Scene):
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.__character.move(-1)
+                    if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        self.__character.move(-1)
+                    else:
+                        self.__character.move(-1000)
                 elif event.key == pygame.K_RIGHT:
-                    self.__character.move(1)
+                    if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        self.__character.move(1)
+                    else:
+                        self.__character.move(1000)
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                     ok = self.__board.shoot(self.__character.getJPos())
                 elif event.key == pygame.K_DOWN:
@@ -60,9 +66,9 @@ class GameScene(Scene):
 
         if action == "esc" or not ok:
             if self.__infinite:
-                action = "go_to_title_scene_infinite"
+                action = "go_to_retry_scene"
             else:
-                action = "go_to_title_scene_normal"
+                action = "go_to_title_scene"
         if self.__next_action is not None:
             action = self.__next_action
 
@@ -104,10 +110,10 @@ class GameScene(Scene):
                 if not self.__network.winSent():
                     self.__network.sendWin()
             else:
-                self.__next_action = "go_to_title_scene_normal"
+                self.__next_action = "go_to_title_scene"
 
         if self.__board.isBoardLost():
-            self.__next_action = "go_to_title_scene_infinite"
+            self.__next_action = "go_to_retry_scene"
 
         self.__score = self.__board.getBlocksShot()
 
