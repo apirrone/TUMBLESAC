@@ -60,9 +60,9 @@ class GameScene(Scene):
 
         if action == "esc" or not ok:
             if self.__infinite:
-                action = "go_to_title_scene_infinite"
+                action = "go_to_retry_scene"
             else:
-                action = "go_to_title_scene_normal"
+                action = "go_to_title_scene"
         if self.__next_action is not None:
             action = self.__next_action
 
@@ -104,10 +104,10 @@ class GameScene(Scene):
                 if not self.__network.winSent():
                     self.__network.sendWin()
             else:
-                self.__next_action = "go_to_title_scene_normal"
+                self.__next_action = "go_to_title_scene"
 
         if self.__board.isBoardLost():
-            self.__next_action = "go_to_title_scene_infinite"
+            self.__next_action = "go_to_retry_scene"
 
         self.__score = self.__board.getBlocksShot()
 

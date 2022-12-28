@@ -1,6 +1,4 @@
 from tumblesac.scenes.menuScene import MenuScene, Button
-import pickle
-import os
 
 
 class TitleMenuScene(MenuScene):

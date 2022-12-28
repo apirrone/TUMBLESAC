@@ -17,7 +17,7 @@ class ModeSelectScene(MenuScene):
         events, action = super().input()
 
         if action == "esc":
-            action = "go_to_title_scene_normal"
+            action = "go_to_title_scene"
 
         return events, action
 
