@@ -49,9 +49,15 @@ class GameScene(Scene):
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.__character.move(-1)
+                    if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        self.__character.move(-1)
+                    else:
+                        self.__character.move(-1000)
                 elif event.key == pygame.K_RIGHT:
-                    self.__character.move(1)
+                    if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                        self.__character.move(1)
+                    else:
+                        self.__character.move(1000)
                 elif event.key == pygame.K_SPACE or event.key == pygame.K_UP:
                     ok = self.__board.shoot(self.__character.getJPos())
                 elif event.key == pygame.K_DOWN:
