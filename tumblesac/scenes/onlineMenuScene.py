@@ -1,6 +1,6 @@
 from tumblesac.scenes.menuScene import MenuScene, Button, ToggleButton
 from requests import get
-
+import threading
 
 class OnlineMenuScene(MenuScene):
     def __init__(self, w, h, scale, port):
@@ -22,8 +22,13 @@ class OnlineMenuScene(MenuScene):
         )
         self._buttons[0].setHighlighted(True)
 
-        self.__ip = get("https://api.ipify.org").content.decode("utf8")
         self.__port = port
+        t = threading.Thread(target=self.acquireIp)
+        t.start()
+        # self.__ip = get("https://api.ipify.org").content.decode("utf8")
+
+    def acquireIp(self):
+        self.__ip = get("https://api.ipify.org").content.decode("utf8")
 
     def input(self):
         events, action = super().input()

@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import time
 
 COLORS = {
     1: (255, 0, 0),
@@ -26,6 +27,8 @@ class Board:
         self.__grid_backup = None
 
         self.__blocksShot = 0
+        self.__lastTimeShot = time.time()
+        self.__speed = 0
 
     def __shiftBoardDown(self):
         if (
@@ -69,6 +72,7 @@ class Board:
                     return (i - 1, charJPos)
 
     def __getSpeed(self):
+
         # speed = max(1, np.exp(self.__blocksShot/17))
         speed = max(1, (self.__blocksShot / 17) ** 2)
         return speed
@@ -196,6 +200,7 @@ class Board:
         return np.count_nonzero(self.__grid) == 0
 
     def shoot(self, charJPos):
+        self.__lastTimeShot = time.time()
         ok = True
         blockPos = self.__getHighlightedBlock(charJPos)
         if blockPos is not None:
@@ -229,7 +234,12 @@ class Board:
 
     def draw(self, surface, scale, charJPos, dt):
         if self.__infinite:
-            self.__i_offset += scale * (dt * 0.0001) * self.__getSpeed()
+
+            elapsedSinceLastShot = time.time() - self.__lastTimeShot
+            if elapsedSinceLastShot > 0.3 and self.__blocksShot > 1:
+                self.__speed += elapsedSinceLastShot*0.01
+            self.__i_offset += scale * (dt * 0.0001) * self.__speed
+            # self.__i_offset += scale * (dt * 0.0001) * self.__getSpeed()
             if self.__i_offset >= scale:
                 self.__shiftBoardDown()
                 self.__i_offset = 0
