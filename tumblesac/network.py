@@ -3,13 +3,18 @@ import requests
 import json
 import threading
 
+
 class Network:
-    def __init__(self, ip, port, name):
-        self.__ip = ip
-        self.__port = port
+    def __init__(self, cfg_file_path):
+
+        cfg = json.load(open(cfg_file_path))
+
+        self.__ip = cfg["ip"]
+        self.__port = cfg["port"]
+        self.__name = cfg["name"]
+        self.__game_type = cfg["game_type"]
 
         self.__id = None
-        self.__name = name
         self.__conn = None
 
         self.__players = {}
@@ -118,6 +123,9 @@ class Network:
 
     def getMyName(self):
         return self.__name
+
+    def getPort(self):
+        return self.__port
 
     def getInitialBoardState(self):
         return self.__initial_board_state

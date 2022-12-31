@@ -30,13 +30,16 @@ def main():
         window_size = screen.get_size()
 
     package_root_dir = os.path.dirname(os.path.dirname(__file__))
-    cfg = json.load(open(os.path.join(package_root_dir, "config", "online.cfg")))
-    network = Network(cfg["ip"], cfg["port"], cfg["name"])
+    network = Network(os.path.join(package_root_dir, "config", "online.cfg"))
 
     titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
     titleMenuScene.updateHighScores(network.getNHighestScores())
-    onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55, cfg["port"])
-    retryMenuScene = RetryMenuScene(window_size[0], window_size[1], 55, "Infinite mode", network)
+    onlineMenuScene = OnlineMenuScene(
+        window_size[0], window_size[1], 55, network.getPort()
+    )
+    retryMenuScene = RetryMenuScene(
+        window_size[0], window_size[1], 55, "Infinite mode", network
+    )
     gameScene = None  # GameScene(window_size[0], window_size[1], 55)
     lobbyScene = None
 
