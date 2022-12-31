@@ -25,7 +25,7 @@ class OnlineMenuScene(MenuScene):
         self.__port = port
         t = threading.Thread(target=self.acquireIp)
         t.start()
-        # self.__ip = get("https://api.ipify.org").content.decode("utf8")
+        self.__ip = "acquiring ip..."
 
     def acquireIp(self):
         self.__ip = get("https://api.ipify.org").content.decode("utf8")

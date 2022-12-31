@@ -106,7 +106,7 @@ class GameScene(Scene):
                     if charJPos is not None:
                         self.__playersCharacters[id].setJPos(charJPos)
 
-        if self.__board.isBoardEmpty():
+        if self.__board.isBoardEmpty() and not self.__infinite:
             if self.__network is not None:
                 if not self.__network.winSent():
                     self.__network.sendWin()

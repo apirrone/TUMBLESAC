@@ -14,7 +14,7 @@ setup(
     name="tumblesac",
     version="1.0.2",
     packages=find_packages(),
-    install_requires=["numpy==1.23.4", "pygame==2.1.2", "requests=2.26.0"],
+    install_requires=["numpy==1.23.4", "pygame==2.1.2", "requests==2.26.0"],
     author="Antoine Pirrone",
     author_email="antoine.pirrone@gmail.com",
     url="https://github.com/apirrone/TUMBLESAC",
