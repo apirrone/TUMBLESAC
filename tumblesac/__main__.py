@@ -82,6 +82,10 @@ def main():
             print("START HOSTING")
             print("Running server in background ...")
             host_subprocess = subprocess.Popen(["tumblesac_server"])
+        elif action == "hosting_infinite":
+            print("START HOSTING INFINITE")
+            print("Running server in background ...")
+            host_subprocess = subprocess.Popen(["tumblesac_server_infinite"])
         elif action == "not_hosting":
             os.kill(host_subprocess.pid, signal.SIGTERM)
             host_subprocess = None

@@ -1,14 +1,15 @@
-# import socket
 import _thread
 from multiprocessing.connection import Listener
 import time
 from tumblesac.board import Board
+import sys
 
 
 class Server:
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, infinite=False):
         self.__ip = ip
         self.__port = port
+        self.__infinite = infinite
 
         self.__current_id = 0
         self.__players = {}
@@ -131,10 +132,15 @@ class Server:
             time.sleep(0.1)
 
 
-def main():
+def mainInfinite():
+    s = Server("0.0.0.0", 5001, infinite=True)
+    s.start()
+
+
+def mainNormal():
     s = Server("0.0.0.0", 5001)
     s.start()
 
 
 if __name__ == "__main__":
-    main()
+    mainNormal()

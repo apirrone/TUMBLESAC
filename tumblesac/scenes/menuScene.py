@@ -3,7 +3,7 @@ from tumblesac.scenes.scene import Scene
 
 
 class Button:
-    def __init__(self, text, pos, w, h, scale, action):
+    def __init__(self, text, pos, w, h, scale, action, enabled=True):
         self._text = text
         self._pos = pos
         self._w = w
@@ -12,6 +12,7 @@ class Button:
         self._font = pygame.font.SysFont(None, self._scale)
         self._highlighted = False
         self._action = action
+        self._enabled = enabled
 
     def draw(self, surface):
         if self._highlighted:
@@ -38,7 +39,9 @@ class Button:
                 3,
             )
 
-        label = self._font.render(self._text, 1, (0, 0, 0))
+        label = self._font.render(
+            self._text, 1, (0, 0, 0) if self._enabled else (128, 128, 128)
+        )
 
         surface.blit(label, (self._pos[0] * self._scale, self._pos[1] * self._scale))
 
@@ -49,7 +52,22 @@ class Button:
         return self._highlighted
 
     def getAction(self):
-        return self._action
+        if self._enabled:
+            return self._action
+        else:
+            return None
+
+    def getState(self):
+        return True
+
+    def disable(self):
+        self._enabled = False
+
+    def enable(self):
+        self._enabled = True
+
+    def isEnabled(self):
+        return self._enabled
 
     def toggle(self):
         pass
@@ -67,9 +85,16 @@ class ToggleButton(Button):
         action_state_true,
         action_state_false,
         state=False,
+        enabled=True,
     ):
         super().__init__(
-            textTrue if state else textFalse, pos, w, h, scale, action_state_true
+            textTrue if state else textFalse,
+            pos,
+            w,
+            h,
+            scale,
+            action_state_true,
+            enabled=enabled,
         )
         self.__textTrue = textTrue
         self.__textFalse = textFalse
@@ -100,14 +125,20 @@ class ToggleButton(Button):
         super().getHighlighted()
 
     def getAction(self):
-        if self.__state:
-            return self.__action_state_true
+        if self._enabled:
+            return (
+                self.__action_state_true if self.__state else self.__action_state_false
+            )
         else:
-            return self.__action_state_false
+            return None
+
+    def getState(self):
+        return self.__state
 
     def toggle(self):
-        self.__state = not self.__state
-        self._text = self.__textTrue if self.__state else self.__textFalse
+        if self._enabled:
+            self.__state = not self.__state
+            self._text = self.__textTrue if self.__state else self.__textFalse
 
 
 class MenuScene(Scene):
@@ -116,6 +147,7 @@ class MenuScene(Scene):
 
         self._buttons = []
         self._currentButton = 0
+        self._mutuallyExclusiveToggleButtons = []
 
     def input(self):
         events, action = super().input()
@@ -131,6 +163,7 @@ class MenuScene(Scene):
                 elif event.key == pygame.K_RETURN:
                     self._buttons[self._currentButton].toggle()
                     action = self._buttons[self._currentButton].getAction()
+                    self.applyMutuallyExclusiveness()
 
         return events, action
 
@@ -149,3 +182,30 @@ class MenuScene(Scene):
             button.draw(self._surface)
 
         self._surface.blit(self._surface, (0, 0))
+
+    # ids of buttons in list
+    # for example, if ids 0 and 1 are mutually exclusive, if 0 is toggled,
+    #   1 will be disabled and vice versa
+    # if both are untoggled, both are enabled
+    def addMutuallyExclusiveToggleButtonsPair(self, pair):
+        if pair[0] < len(self._buttons) and pair[1] < len(self._buttons):
+            self._mutuallyExclusiveToggleButtons.append(pair)
+        else:
+            print(
+                "ERROR: invalid button id(s) for mutually exclusive toggle buttons pair"
+            )
+
+    def applyMutuallyExclusiveness(self):
+        for pair in self._mutuallyExclusiveToggleButtons:
+            b1 = self._buttons[pair[0]]
+            b2 = self._buttons[pair[1]]
+
+            if not b1.getState() and not b2.getState():
+                b1.enable()
+                b2.enable()
+            elif b1.getState():
+                b1.enable()
+                b2.disable()
+            else:
+                b1.disable()
+                b2.enable()

@@ -12,8 +12,8 @@ class Network:
         self.__ip = cfg["ip"]
         self.__port = cfg["port"]
         self.__name = cfg["name"]
-        self.__game_type = cfg["game_type"]
-
+        self.__game_type = None
+        
         self.__id = None
         self.__conn = None
 

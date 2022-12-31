@@ -20,6 +20,19 @@ class OnlineMenuScene(MenuScene):
                 "not_hosting",
             )
         )
+        self._buttons.append(
+            ToggleButton(
+                "Stop hosting infinite",
+                "Start hosting infinite",
+                (1, 9),
+                7,
+                2,
+                self._scale,
+                "hosting_infinite",
+                "not_hosting",
+            )
+        )
+        self.addMutuallyExclusiveToggleButtonsPair([1, 2])
         self._buttons[0].setHighlighted(True)
 
         self.__ip = get("https://api.ipify.org").content.decode("utf8")
