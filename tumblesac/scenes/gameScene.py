@@ -2,6 +2,7 @@ import pygame
 from tumblesac.scenes.scene import Scene
 from tumblesac.board import Board
 from tumblesac.character import Character
+import numpy as np
 
 
 class GameScene(Scene):
@@ -9,13 +10,17 @@ class GameScene(Scene):
         super().__init__(w, h, scale)
 
         self.__network = network
-        self.__infinite = infinite
+        if self.__network is not None:
+            self.__infinite = self.__network.isInfinite()
+        else:
+            self.__infinite = infinite
         self.__board = Board((2, 1), infinite=self.__infinite)
         self.__score = 0
 
         if self.__network is None:
             self.__board.populate(100)
         else:
+            np.random.seed(self.__network.getSeed())
             self.__board.populateFromState(self.__network.getInitialBoardState())
 
             self.__playersBoards = {}

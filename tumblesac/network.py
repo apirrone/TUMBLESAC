@@ -13,7 +13,8 @@ class Network:
         self.__port = cfg["port"]
         self.__name = cfg["name"]
         self.__game_type = None
-        
+        self.__seed = None
+
         self.__id = None
         self.__conn = None
 
@@ -49,6 +50,8 @@ class Network:
         self.__conn.send(msg)
         msg = self.__conn.recv()
         self.__id = msg["id"]
+        self.__game_type = msg["game_type"]
+        print("GAME TYPE :", self.__game_type)
 
         return True
 
@@ -107,6 +110,7 @@ class Network:
             if not msg["game_started"]:
                 if self.__initial_board_state is None:
                     self.__initial_board_state = msg["initial_board_state"]
+                    self.__seed = msg["seed"]
                 self.__game_started = False
             else:
                 self.__game_started = True
@@ -126,6 +130,12 @@ class Network:
 
     def getPort(self):
         return self.__port
+
+    def getSeed(self):
+        return self.__seed
+
+    def isInfinite(self):
+        return self.__game_type == "infinite"
 
     def getInitialBoardState(self):
         return self.__initial_board_state

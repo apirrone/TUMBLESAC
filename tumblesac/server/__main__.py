@@ -2,7 +2,7 @@ import _thread
 from multiprocessing.connection import Listener
 import time
 from tumblesac.board import Board
-import sys
+import numpy as np
 
 
 class Server:
@@ -17,8 +17,9 @@ class Server:
 
         self.__socket = Listener((self.__ip, self.__port))
         self.__board = Board((0, 0), nbColors=4, buffer_size=3, w=5)
-        self.__boardSize = 50
-        self.__board.populate(self.__boardSize)  # TODO choose this number well
+        self.__boardSize = 50  # TODO choose this number well
+        self.__board.populate(self.__boardSize)
+        self.__seed = np.random.randint(0, 1000000)
 
         self.__game_started = False
         self.__game_ready = False
@@ -32,6 +33,7 @@ class Server:
         self.__game_started = True
         self.__winner = None
         self.__game_over = False
+        self.__seed = np.random.randint(0, 1000000)
         self.__board.populate(self.__boardSize)
 
     def __new_player(self, conn, id, name):
@@ -43,7 +45,8 @@ class Server:
             "ready": False,
             "score": 0,
         }
-        conn.send({"id": id})
+        game_type = "normal" if not self.__infinite else "infinite"
+        conn.send({"id": id, "game_type": game_type})
 
     def __disconnect(self, id):
         print("player ", self.__players[id]["name"], "disconnected")
@@ -110,6 +113,7 @@ class Server:
                         "game_over": self.__game_over,
                         "winner": self.__winner,
                         "initial_board_state": initial_board_state,
+                        "seed": self.__seed,
                     }
                 else:
                     msg = {
