@@ -29,6 +29,8 @@ class Board:
         self.__blocksShot = 0
         self.__lastTimeShot = time.time()
         self.__speed = 0
+        self.__elapsedSinceLastShot = 0
+        self.__timeoutLastShot = 0.8
 
     def __shiftBoardDown(self):
         if (
@@ -232,12 +234,22 @@ class Board:
                 5,
             )
 
+    def getTimeoutLastShot(self):
+        return self.__timeoutLastShot
+
+    def getElapsedSinceLastShot(self):
+        return self.__elapsedSinceLastShot
+
     def draw(self, surface, scale, charJPos, dt):
         if self.__infinite:
 
-            elapsedSinceLastShot = time.time() - self.__lastTimeShot
-            if elapsedSinceLastShot > 0.3 and self.__blocksShot > 1:
-                self.__speed += elapsedSinceLastShot*0.01
+            self.__elapsedSinceLastShot = time.time() - self.__lastTimeShot
+            if (
+                self.__elapsedSinceLastShot > self.__timeoutLastShot
+                and self.__blocksShot > 1
+            ):
+                self.__speed += self.__elapsedSinceLastShot * 0.01
+
             self.__i_offset += scale * (dt * 0.0001) * self.__speed
             # self.__i_offset += scale * (dt * 0.0001) * self.__getSpeed()
             if self.__i_offset >= scale:
