@@ -36,7 +36,9 @@ def main():
     titleMenuScene = TitleMenuScene(window_size[0], window_size[1], 55, "TUMBLESAC")
     titleMenuScene.updateHighScores(network.getNHighestScores())
     onlineMenuScene = OnlineMenuScene(window_size[0], window_size[1], 55, cfg["port"])
-    retryMenuScene = RetryMenuScene(window_size[0], window_size[1], 55, "Infinite mode", network)
+    retryMenuScene = RetryMenuScene(
+        window_size[0], window_size[1], 55, "Infinite mode", network
+    )
     gameScene = None  # GameScene(window_size[0], window_size[1], 55)
     lobbyScene = None
 

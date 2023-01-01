@@ -2,6 +2,7 @@ import pygame
 from tumblesac.scenes.scene import Scene
 from tumblesac.board import Board
 from tumblesac.character import Character
+import numpy as np
 
 
 class GameScene(Scene):
@@ -105,7 +106,7 @@ class GameScene(Scene):
                     if charJPos is not None:
                         self.__playersCharacters[id].setJPos(charJPos)
 
-        if self.__board.isBoardEmpty():
+        if self.__board.isBoardEmpty() and not self.__infinite:
             if self.__network is not None:
                 if not self.__network.winSent():
                     self.__network.sendWin()
@@ -132,6 +133,33 @@ class GameScene(Scene):
                 "Score : " + str(self.__score), 1, (0, 0, 0)
             )
             self._surface.blit(label, (7 * self._scale, 10 * self._scale))
+
+            circlePos = (10, 13)
+            pygame.draw.circle(
+                self._surface,
+                (0, 200, 0),
+                tuple(np.array(circlePos) * self._scale),
+                2 * self._scale,
+            )
+
+            angleValue = (
+                min(
+                    self.__board.getTimeoutLastShot(),
+                    self.__board.getElapsedSinceLastShot(),
+                )
+                * (1 / self.__board.getTimeoutLastShot())
+                * np.pi
+                * 2
+                + np.pi / 2
+            )
+            pygame.draw.arc(
+                self._surface,
+                (255, 0, 0),
+                np.array([circlePos[0] - 2, circlePos[1] - 2, 4, 4]) * self._scale,
+                np.pi / 2,
+                angleValue,
+                width=2 * self._scale,
+            )
 
         if self.__network is not None:
             label = pygame.font.SysFont(None, self._scale).render(
