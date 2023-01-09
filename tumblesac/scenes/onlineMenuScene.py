@@ -1,6 +1,8 @@
 from tumblesac.scenes.menuScene import MenuScene, Button, ToggleButton
 from requests import get
 import threading
+import requests
+
 
 class OnlineMenuScene(MenuScene):
     def __init__(self, w, h, scale, port):
@@ -28,7 +30,11 @@ class OnlineMenuScene(MenuScene):
         self.__ip = "acquiring ip..."
 
     def acquireIp(self):
-        self.__ip = get("https://api.ipify.org").content.decode("utf8")
+        self.__ip = "<Could not get ip>"
+        try:
+            self.__ip = get("https://api.ipify.org").content.decode("utf8")
+        except requests.exceptions.ConnectionError as e:
+            print(e)
 
     def input(self):
         events, action = super().input()

@@ -40,9 +40,15 @@ class TitleMenuScene(MenuScene):
 
         label = self._font.render("Infinite mode high scores : ", 1, (0, 0, 0))
         self._surface.blit(label, (7 * self._scale, 10 * self._scale))
+        if self.__highscores is None:
+            label = self._font.render("Could not fetch high scores", 1, (0, 0, 0))
+            self._surface.blit(label, (7 * self._scale, (12) * self._scale))
 
-        for i, score in enumerate(self.__highscores):
-            label = self._font.render(str(score[0]) + " : " + str(score[1]), 1, (0, 0, 0))
-            self._surface.blit(label, (7 * self._scale, (12 + i) * self._scale))
+        else:
+            for i, score in enumerate(self.__highscores):
+                label = self._font.render(
+                    str(score[0]) + " : " + str(score[1]), 1, (0, 0, 0)
+                )
+                self._surface.blit(label, (7 * self._scale, (12 + i) * self._scale))
 
         screen.blit(self._surface, (0, 0))
