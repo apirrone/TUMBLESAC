@@ -3,6 +3,7 @@ import requests
 import json
 import threading
 
+
 class Network:
     def __init__(self, ip, port, name):
         self.__ip = ip
@@ -124,13 +125,16 @@ class Network:
 
     def getHighScores(self):
 
-        highscores = json.loads(
-            requests.get(
+        try:
+            req = requests.get(
                 self.__highscoresUrl + "/latest",
                 json=None,
                 headers=self.__highscoresHeaders,
             ).text
-        )["record"]
+        except requests.exceptions.ConnectionError as e:
+            print(e)
+            return None
+        highscores = json.loads(req)["record"]
 
         return highscores
 
@@ -142,22 +146,36 @@ class Network:
 
     def t_updateHighScores(self, score):
         print("UPDATING HIGHSCORES ... ")
+
         highscores = self.getHighScores()
+
+        if highscores is None:
+            print("Could not get high scores")
+            return
+
         if self.__name in highscores:
             if score > int(highscores[self.__name]):
                 highscores[self.__name] = score
         else:
             highscores[self.__name] = score
 
-        requests.put(
-            self.__highscoresUrl, json=highscores, headers=self.__highscoresHeaders
-        )
-        print("DONE !")
-        self.__updating = False
+        try:
+            requests.put(
+                self.__highscoresUrl, json=highscores, headers=self.__highscoresHeaders
+            )
+            print("DONE !")
+            self.__updating = False
+        except requests.exceptions.ConnectionError as e:
+            print(e)
 
     # To test
     def getNHighestScores(self, n=3):
         highscores = self.getHighScores()
+
+        if highscores is None:
+            print("Could not get high scores")
+            return None
+            
         sorted_highscores = sorted(
             highscores.items(), key=lambda item: item[1], reverse=True
         )
