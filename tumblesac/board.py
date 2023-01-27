@@ -248,7 +248,7 @@ class Board:
                 self.__elapsedSinceLastShot > self.__timeoutLastShot
                 and self.__blocksShot > 1
             ):
-                self.__speed += self.__elapsedSinceLastShot * 0.01
+                self.__speed += self.__elapsedSinceLastShot * 1000*dt
 
             self.__i_offset += scale * (dt * 0.0001) * self.__speed
             # self.__i_offset += scale * (dt * 0.0001) * self.__getSpeed()
