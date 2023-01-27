@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="tumblesac/assets/dr_antoijne_shitty_games.png"/>
+  <img src="tumblesac/assets/dr_antoijne_shitty_games.png", width=200/>
 </p>
 
 # TUMBLESAC
