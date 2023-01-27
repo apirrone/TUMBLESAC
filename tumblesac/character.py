@@ -1,5 +1,5 @@
-import pygame
 
+import pygame
 
 class Character:
     def __init__(self, color, grid_size, board_pos):

@@ -1,4 +1,41 @@
 from tumblesac.scenes.menuScene import MenuScene, Button
+import numpy as np
+import os
+import pygame
+
+
+class Logo:
+    def __init__(self, pos, size):
+        self._pos = pos
+        self._size = np.array(size)
+        self._speed = 1.0
+
+        self._currentSize = np.array([1.0, 1.0])
+        package_root_dir = os.path.dirname(os.path.dirname(__file__))
+        self._im_orig = pygame.image.load(
+            os.path.join(package_root_dir, "assets", "dr_antoijne_shitty_games.png")
+        )
+        self._im = self._im_orig.copy()
+        self._t = 0
+        self._incomingDone = False
+
+    def update(self, dt):
+        self._t += dt
+
+        if self._currentSize[0] < self._size[0] and not self._incomingDone:
+            self._currentSize += [self._speed, self._speed]
+            self._speed += 1.0 * dt
+        else:
+            self._incomingDone = True
+            self._currentSize = self._size + np.sin(2 * np.pi * 1 * self._t) * 60
+
+        self._im = pygame.transform.scale(self._im_orig, self._currentSize)
+        self._im = pygame.transform.rotate(
+            self._im, np.sin(2 * np.pi * 0.2 * self._t) * 10
+        )
+
+    def draw(self, surface):
+        surface.blit(self._im, self._pos)
 
 
 class TitleMenuScene(MenuScene):
@@ -18,6 +55,9 @@ class TitleMenuScene(MenuScene):
 
         self.__highscores = None
 
+        self.__logo = Logo((w // 2, 0), (400, 400))
+        self.__last_background_update = 0.2
+
     def input(self):
         events, action = super().input()
 
@@ -28,6 +68,9 @@ class TitleMenuScene(MenuScene):
 
     def update(self, dt):
         super().update(dt)
+
+        self.__last_background_update -= dt
+        self.__logo.update(dt)
 
     def updateHighScores(self, scores):
         self.__highscores = scores
@@ -50,5 +93,7 @@ class TitleMenuScene(MenuScene):
                     str(score[0]) + " : " + str(score[1]), 1, (0, 0, 0)
                 )
                 self._surface.blit(label, (7 * self._scale, (12 + i) * self._scale))
+
+        self.__logo.draw(self._surface)
 
         screen.blit(self._surface, (0, 0))

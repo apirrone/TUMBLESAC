@@ -46,7 +46,7 @@ def main():
 
     host_subprocess = None
 
-    dt = clock.tick()  # is this really dt ?
+    dt = clock.tick(165)/1000.  # is this really dt ?
     running = True
     while running:
         _, action = current_scene.input()
@@ -104,7 +104,7 @@ def main():
         current_scene.draw(screen)
 
         pygame.display.flip()
-        dt = clock.tick()
+        dt = clock.tick(165)/1000.
 
     network.disconnect()
     if host_subprocess is not None:
