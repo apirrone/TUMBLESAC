@@ -2,13 +2,15 @@ from tumblesac.scenes.menuScene import MenuScene, Button
 import numpy as np
 import os
 import pygame
+from pygame import mixer
+from tumblesac.animations import ExplisionAnimation
 
 
 class Logo:
     def __init__(self, pos, size):
         self._pos = pos
         self._size = np.array(size)
-        self._speed = 1.0
+        self._speed = 0.01
 
         self._currentSize = np.array([1.0, 1.0])
         package_root_dir = os.path.dirname(os.path.dirname(__file__))
@@ -19,15 +21,24 @@ class Logo:
         self._t = 0
         self._incomingDone = False
 
+        mixer.init()
+        mixer.music.load(os.path.join(package_root_dir, "assets", "crappyantoijne.wav"))
+        mixer.music.play()
+
+        self._explosionAnimation = ExplisionAnimation([0, 0])
+
     def update(self, dt):
         self._t += dt
 
         if self._currentSize[0] < self._size[0] and not self._incomingDone:
             self._currentSize += [self._speed, self._speed]
-            self._speed += 1.0 * dt
+            # self._speed += 2 * dt
+            self._speed += 0.28 * dt
         else:
             self._incomingDone = True
             self._currentSize = self._size + np.sin(2 * np.pi * 1 * self._t) * 60
+            self._explosionAnimation.set_pos(self._pos + self._size // 2)
+            self._explosionAnimation.update(dt)
 
         self._im = pygame.transform.scale(self._im_orig, self._currentSize)
         self._im = pygame.transform.rotate(
@@ -35,8 +46,9 @@ class Logo:
         )
 
     def draw(self, surface):
-        surface.blit(self._im, self._pos)
 
+        surface.blit(self._im, self._pos)
+        self._explosionAnimation.draw(surface)
 
 class TitleMenuScene(MenuScene):
     def __init__(self, w, h, scale, title):
